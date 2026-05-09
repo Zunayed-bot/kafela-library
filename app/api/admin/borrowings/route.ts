@@ -24,10 +24,10 @@ export async function GET(request: NextRequest) {
   if (status) where.status = status;
   if (search) {
     where.OR = [
-      { user: { name: { contains: search } } },
-      { user: { studentId: { contains: search } } },
-      { book: { title: { contains: search } } },
-      { book: { titleBangla: { contains: search } } },
+      { user: { name: { contains: search, mode: "insensitive" } } },
+      { user: { studentId: { contains: search, mode: "insensitive" } } },
+      { book: { title: { contains: search, mode: "insensitive" } } },
+      { book: { titleBangla: { contains: search, mode: "insensitive" } } },
     ];
   }
 

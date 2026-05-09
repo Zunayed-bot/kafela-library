@@ -18,8 +18,8 @@ export async function GET(request: NextRequest) {
   if (action) where.action = action;
   if (search) {
     where.OR = [
-      { user: { name: { contains: search } } },
-      { user: { studentId: { contains: search } } },
+      { user: { name: { contains: search, mode: "insensitive" } } },
+      { user: { studentId: { contains: search, mode: "insensitive" } } },
     ];
   }
 
