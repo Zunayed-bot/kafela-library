@@ -188,7 +188,8 @@ export default function ProgramsPage() {
               {/* Thumbnail */}
               <div className="relative h-36 bg-gray-100">
                 {video.thumbnail ? (
-                  <Image src={video.thumbnail} alt={video.title || "ভিডিও"} fill className="object-cover" />
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={video.thumbnail} alt={video.title || "ভিডিও"} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <ImageIcon size={32} className="text-gray-300" />
@@ -282,8 +283,9 @@ export default function ProgramsPage() {
                     placeholder="https://i.ytimg.com/vi/.../hqdefault.jpg"
                   />
                   {videoForm.thumbnail && (
-                    <div className="mt-2 relative h-24 rounded-lg overflow-hidden bg-gray-100">
-                      <Image src={videoForm.thumbnail} alt="preview" fill className="object-cover" onError={() => setVideoForm(f => ({ ...f, thumbnail: "" }))} />
+                    <div className="mt-2 h-24 rounded-lg overflow-hidden bg-gray-100">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={videoForm.thumbnail} alt="preview" className="w-full h-full object-cover" onError={() => setVideoForm(f => ({ ...f, thumbnail: "" }))} />
                     </div>
                   )}
                   <p className="text-xs text-gray-400 mt-1 font-bangla">YouTube থাম্বনেইল: https://i.ytimg.com/vi/VIDEO_ID/hqdefault.jpg</p>

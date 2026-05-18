@@ -499,7 +499,8 @@ function ProgramsSection() {
                       {/* Thumbnail */}
                       <div className="relative h-28 bg-gray-100">
                         {video.thumbnail ? (
-                          <Image src={video.thumbnail} alt={video.title || "ভিডিও"} fill className="object-cover" />
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={video.thumbnail} alt={video.title || "ভিডিও"} className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-primary-50">
                             <Play size={28} className="text-primary/40" />
