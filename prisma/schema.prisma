@@ -195,16 +195,31 @@ model Category {
 }
 
 model ProgramEvent {
-  id          String   @id @default(cuid())
+  id          String         @id @default(cuid())
   title       String
   description String?
-  videoUrl    String?
-  thumbnail   String?
-  colorClass  String   @default("bg-emerald-500")
-  order       Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  colorClass  String         @default("bg-emerald-500")
+  order       Int            @default(0)
+  isActive    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
+  videos      ProgramVideo[]
+
+  @@index([order])
+}
+
+model ProgramVideo {
+  id          String       @id @default(cuid())
+  programId   String
+  title       String?
+  thumbnail   String?
+  videoUrl    String
+  order       Int          @default(0)
+  createdAt   DateTime     @default(now())
+
+  program     ProgramEvent @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@index([programId])
   @@index([order])
 }

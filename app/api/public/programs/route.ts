@@ -6,6 +6,9 @@ export async function GET() {
     const programs = await prisma.programEvent.findMany({
       where: { isActive: true },
       orderBy: { order: "asc" },
+      include: {
+        videos: { orderBy: { order: "asc" } },
+      },
     });
     return NextResponse.json({ success: true, data: programs });
   } catch {

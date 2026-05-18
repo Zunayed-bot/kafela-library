@@ -17,13 +17,13 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { title, description, videoUrl, thumbnail, colorClass, order, isActive } = body;
+    const { title, description, colorClass, order, isActive } = body;
 
     if (!title) return apiError("শিরোনাম আবশ্যক।", 400);
 
     const program = await prisma.programEvent.create({
       data: {
-        title, description, videoUrl, thumbnail,
+        title, description,
         colorClass: colorClass || "bg-emerald-500",
         order: order ?? 0,
         isActive: isActive ?? true,

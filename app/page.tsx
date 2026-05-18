@@ -352,18 +352,25 @@ function AboutSection() {
 }
 
 // ─── Programs Section (Dynamic from DB) ──────────────────────────────────────
+interface ProgramVideo {
+  id: string;
+  title?: string;
+  thumbnail?: string;
+  videoUrl: string;
+  order: number;
+}
+
 interface ProgramEvent {
   id: string;
   title: string;
   description?: string;
-  videoUrl?: string;
-  thumbnail?: string;
   colorClass: string;
+  videos: ProgramVideo[];
 }
 
 function ProgramsSection() {
   const [programs, setPrograms] = useState<ProgramEvent[]>([]);
-  const [activeVideo, setActiveVideo] = useState<ProgramEvent | null>(null);
+  const [activeProgram, setActiveProgram] = useState<ProgramEvent | null>(null);
 
   useEffect(() => {
     fetch("/api/public/programs")
@@ -372,12 +379,12 @@ function ProgramsSection() {
   }, []);
 
   const fallback: ProgramEvent[] = [
-    { id: "f1", title: "বিশুদ্ধ বাংলা বক্তৃতা", description: "নৈতিক চরিত্র, শালীনতা ও যোগাযোগ দক্ষতা উন্নয়ন", colorClass: "bg-emerald-500" },
-    { id: "f2", title: "আরবী বক্তৃতা", description: "মুসলিম উম্মাহর সাথে সেতুবন্ধন তৈরি করতে আরবিতে দাওয়াহ", colorClass: "bg-amber-500" },
-    { id: "f3", title: "ইংরেজি বক্তৃতা", description: "বিশ্বের ইংরেজিভাষী মানুষের কাছে হিদায়াতের বার্তা", colorClass: "bg-blue-500" },
-    { id: "f4", title: "অধ্যয়ন ও জ্ঞান সাধন", description: "সমৃদ্ধ পাঠাগার ও নিয়মিত জ্ঞানচর্চার আয়োজন", colorClass: "bg-purple-500" },
-    { id: "f5", title: "লেখালেখি প্রশিক্ষণ", description: "প্রবন্ধ, গল্প, কবিতা, বই রচনায় দক্ষতা অর্জন", colorClass: "bg-rose-500" },
-    { id: "f6", title: "প্রযুক্তিবিদ্যা ও মিডিয়া", description: "AI যুগে উম্মাহর প্রযুক্তিগত নেতৃত্বের প্রস্তুতি", colorClass: "bg-cyan-500" },
+    { id: "f1", title: "বিশুদ্ধ বাংলা বক্তৃতা", description: "নৈতিক চরিত্র, শালীনতা ও যোগাযোগ দক্ষতা উন্নয়ন", colorClass: "bg-emerald-500", videos: [] },
+    { id: "f2", title: "আরবী বক্তৃতা", description: "মুসলিম উম্মাহর সাথে সেতুবন্ধন তৈরি করতে আরবিতে দাওয়াহ", colorClass: "bg-amber-500", videos: [] },
+    { id: "f3", title: "ইংরেজি বক্তৃতা", description: "বিশ্বের ইংরেজিভাষী মানুষের কাছে হিদায়াতের বার্তা", colorClass: "bg-blue-500", videos: [] },
+    { id: "f4", title: "অধ্যয়ন ও জ্ঞান সাধন", description: "সমৃদ্ধ পাঠাগার ও নিয়মিত জ্ঞানচর্চার আয়োজন", colorClass: "bg-purple-500", videos: [] },
+    { id: "f5", title: "লেখালেখি প্রশিক্ষণ", description: "প্রবন্ধ, গল্প, কবিতা, বই রচনায় দক্ষতা অর্জন", colorClass: "bg-rose-500", videos: [] },
+    { id: "f6", title: "প্রযুক্তিবিদ্যা ও মিডিয়া", description: "AI যুগে উম্মাহর প্রযুক্তিগত নেতৃত্বের প্রস্তুতি", colorClass: "bg-cyan-500", videos: [] },
   ];
 
   const displayPrograms = programs.length > 0 ? programs : fallback;
@@ -411,74 +418,108 @@ function ProgramsSection() {
           variants={stagger}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {displayPrograms.map((program, i) => (
+          {displayPrograms.map((program) => (
             <motion.button
               key={program.id}
               variants={fadeUp}
-              onClick={() => program.videoUrl && setActiveVideo(program)}
-              className={`group bg-white rounded-2xl p-6 border border-gray-100 hover:border-gold/30 hover:shadow-card-hover transition-all duration-300 card-hover text-left w-full ${program.videoUrl ? "cursor-pointer" : "cursor-default"}`}
+              onClick={() => setActiveProgram(program)}
+              className="group bg-white rounded-2xl p-6 border border-gray-100 hover:border-gold/30 hover:shadow-card-hover transition-all duration-300 card-hover text-left w-full cursor-pointer"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className={`w-12 h-12 ${program.colorClass} rounded-xl flex items-center justify-center`}>
                   <Video size={22} className="text-white" />
                 </div>
-                {program.videoUrl && (
-                  <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Play size={14} className="text-primary" />
-                  </div>
-                )}
+                <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Play size={14} className="text-primary" />
+                </div>
               </div>
               <h3 className="font-bold text-gray-900 font-bangla mb-2 text-lg">{program.title}</h3>
               {program.description && <p className="text-gray-500 text-sm font-bangla leading-relaxed">{program.description}</p>}
-              {program.videoUrl && (
-                <p className="text-primary text-xs font-bangla mt-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Play size={10} />
-                  ভিডিও দেখুন
-                </p>
-              )}
+              <p className="text-primary text-xs font-bangla mt-3 flex items-center gap-1">
+                <Video size={10} />
+                {program.videos.length > 0 ? `${program.videos.length}টি ভিডিও` : "ভিডিও আসছে শীঘ্রই"}
+              </p>
             </motion.button>
           ))}
         </motion.div>
       </div>
 
-      {/* Video Modal */}
-      {activeVideo && (
+      {/* Program Videos Modal */}
+      {activeProgram && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-          onClick={() => setActiveVideo(null)}
+          onClick={() => setActiveProgram(null)}
         >
           <motion.div
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            className="bg-white rounded-2xl w-full max-w-lg overflow-hidden"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col"
             onClick={e => e.stopPropagation()}
           >
-            {activeVideo.thumbnail && (
-              <div className="relative h-48 bg-gray-100">
-                <Image src={activeVideo.thumbnail} alt={activeVideo.title} fill className="object-cover" />
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-100 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 ${activeProgram.colorClass} rounded-xl flex items-center justify-center`}>
+                  <Video size={18} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 font-bangla text-lg">{activeProgram.title}</h3>
+                  <p className="text-gray-400 text-xs font-bangla">{activeProgram.videos.length}টি ভিডিও</p>
+                </div>
               </div>
-            )}
-            <div className="p-6">
-              <div className="flex items-start justify-between mb-3">
-                <h3 className="font-bold text-gray-900 font-bangla text-xl">{activeVideo.title}</h3>
-                <button onClick={() => setActiveVideo(null)} className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center shrink-0">
-                  <X size={18} className="text-gray-500" />
-                </button>
-              </div>
-              {activeVideo.description && <p className="text-gray-600 font-bangla text-sm mb-4">{activeVideo.description}</p>}
-              {activeVideo.videoUrl && (
-                <a
-                  href={activeVideo.videoUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-700 text-white font-bangla font-medium px-6 py-3 rounded-xl transition-colors"
-                >
-                  <ExternalLink size={18} />
-                  ভিডিও দেখুন
-                </a>
+              <button
+                onClick={() => setActiveProgram(null)}
+                className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center"
+              >
+                <X size={18} className="text-gray-500" />
+              </button>
+            </div>
+
+            {/* Videos grid */}
+            <div className="overflow-y-auto p-6">
+              {activeProgram.videos.length === 0 ? (
+                <div className="text-center py-12">
+                  <Video size={40} className="text-gray-200 mx-auto mb-3" />
+                  <p className="text-gray-400 font-bangla">এখনো কোনো ভিডিও যোগ হয়নি।</p>
+                  <p className="text-gray-300 text-sm font-bangla mt-1">শীঘ্রই আসছে ইনশাআল্লাহ</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {activeProgram.videos.map((video) => (
+                    <a
+                      key={video.id}
+                      href={video.videoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-primary/40 hover:shadow-card transition-all"
+                    >
+                      {/* Thumbnail */}
+                      <div className="relative h-28 bg-gray-100">
+                        {video.thumbnail ? (
+                          <Image src={video.thumbnail} alt={video.title || "ভিডিও"} fill className="object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-primary-50">
+                            <Play size={28} className="text-primary/40" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                            <ExternalLink size={16} className="text-primary" />
+                          </div>
+                        </div>
+                      </div>
+                      {/* Title */}
+                      <div className="p-2.5">
+                        <p className="text-gray-800 font-bangla text-xs font-medium leading-snug line-clamp-2">
+                          {video.title || "ভিডিও দেখুন"}
+                        </p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
               )}
             </div>
           </motion.div>
