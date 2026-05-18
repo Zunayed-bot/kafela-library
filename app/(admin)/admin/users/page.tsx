@@ -206,7 +206,7 @@ export default function AdminUsersPage() {
                 <th className="px-4 py-3 text-left font-semibold text-gray-600 font-bangla">ফোন</th>
                 <th className="px-4 py-3 text-left font-semibold text-gray-600 font-bangla">স্তর</th>
                 <th className="px-4 py-3 text-left font-semibold text-gray-600 font-bangla">স্ট্যাটাস</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-600 font-bangla">ধার</th>
+                <th className="px-4 py-3 text-left font-semibold text-gray-600 font-bangla">বিতরণ</th>
                 <th className="px-4 py-3 text-left font-semibold text-gray-600 font-bangla">যোগের তারিখ</th>
                 <th className="px-4 py-3" />
               </tr>
@@ -361,7 +361,7 @@ export default function AdminUsersPage() {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 font-bangla mb-1">ধার সীমা</label>
+                  <label className="block text-xs font-medium text-gray-600 font-bangla mb-1">বিতরণ সীমা</label>
                   <input
                     type="number"
                     min="1" max="10"
@@ -377,6 +377,7 @@ export default function AdminUsersPage() {
                     onChange={(e) => setForm((f) => ({ ...f, membershipTier: e.target.value }))}
                     className="input-primary text-sm py-2"
                   >
+                    <option value="GENERAL">সাধারণ</option>
                     <option value="SILVER">সিলভার (আল ফিদ্দাহ)</option>
                     <option value="GOLDEN">গোল্ডেন (আয যাহাব)</option>
                     <option value="PLATINUM">প্লাটিনাম (আল মারজান)</option>

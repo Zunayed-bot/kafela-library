@@ -16,7 +16,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       include: { book: { select: { id: true, title: true, availableCopies: true, totalCopies: true } } },
     });
 
-    if (!borrowing) return apiError("ধার রেকর্ড পাওয়া যায়নি।", 404);
+    if (!borrowing) return apiError("বিতরণ রেকর্ড পাওয়া যায়নি।", 404);
 
     // Only admin or the owner can act
     if (session.role !== "ADMIN" && session.userId !== borrowing.userId) {
@@ -110,7 +110,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         },
       });
 
-      return apiResponse(updated, "ধারের মেয়াদ নবায়ন হয়েছে।");
+      return apiResponse(updated, "বিতরণের মেয়াদ নবায়ন হয়েছে।");
     }
 
     return apiError("অবৈধ কার্যক্রম।", 400);

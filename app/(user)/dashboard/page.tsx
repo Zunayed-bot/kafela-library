@@ -104,7 +104,7 @@ export default function DashboardPage() {
             className="flex items-center gap-2 bg-gold hover:bg-gold-600 text-white font-medium px-5 py-2.5 rounded-xl transition-all font-bangla text-sm shrink-0"
           >
             <BookOpen size={16} />
-            বই ধার করুন
+            বই নিন
           </Link>
         </div>
 
@@ -122,7 +122,7 @@ export default function DashboardPage() {
       <motion.div variants={stagger} className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           {
-            label: "সক্রিয় ধার",
+            label: "সক্রিয় বিতরণ",
             value: banglaNumber(activeCount),
             icon: BookOpen,
             color: "text-blue-600 bg-blue-50",
@@ -136,7 +136,7 @@ export default function DashboardPage() {
             border: "border-red-100",
           },
           {
-            label: "মোট ধার",
+            label: "মোট বিতরণ",
             value: banglaNumber(user?._count?.borrowings || 0),
             icon: BookMarked,
             color: "text-green-600 bg-green-50",
@@ -169,7 +169,7 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
           <h2 className="font-bold text-gray-900 font-bangla flex items-center gap-2">
             <Clock size={18} className="text-primary" />
-            সক্রিয় ধার
+            সক্রিয় বিতরণ
           </h2>
           <Link href="/dashboard/borrowed" className="text-sm text-primary hover:underline font-bangla flex items-center gap-1">
             সব দেখুন <ArrowRight size={14} />
@@ -179,9 +179,9 @@ export default function DashboardPage() {
         {borrowings.length === 0 ? (
           <div className="py-12 text-center">
             <BookOpen size={40} className="text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-400 font-bangla">কোনো সক্রিয় ধার নেই।</p>
+            <p className="text-gray-400 font-bangla">কোনো সক্রিয় বিতরণ নেই।</p>
             <Link href="/dashboard/books" className="mt-3 inline-block text-sm text-primary hover:underline font-bangla">
-              বই ধার করুন →
+              বই নিন →
             </Link>
           </div>
         ) : (
@@ -246,7 +246,7 @@ export default function DashboardPage() {
       <motion.div variants={stagger} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { href: "/dashboard/books", label: "বই খুঁজুন", desc: "ক্যাটালগ ব্রাউজ করুন", icon: BookOpen, color: "bg-primary" },
-          { href: "/dashboard/borrowed", label: "ধার ইতিহাস", desc: "সকল ধারের রেকর্ড", icon: History, color: "bg-gold" },
+          { href: "/dashboard/borrowed", label: "বিতরণ ইতিহাস", desc: "সকল বিতরণের রেকর্ড", icon: History, color: "bg-gold" },
           { href: "/dashboard/profile", label: "প্রোফাইল", desc: "তথ্য আপডেট করুন", icon: User, color: "bg-purple-600" },
         ].map((link, i) => (
           <motion.div key={i} variants={fadeUp}>

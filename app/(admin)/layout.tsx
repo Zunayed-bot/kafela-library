@@ -7,15 +7,19 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, BookOpen, Users, BookMarked, AlertTriangle,
   ScrollText, LogOut, Menu, X, ChevronDown, Settings, Globe,
+  UserSquare2, Tag, Video,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
   { href: "/admin", label: "ড্যাশবোর্ড", icon: LayoutDashboard },
   { href: "/admin/books", label: "বই ব্যবস্থাপনা", icon: BookOpen },
+  { href: "/admin/categories", label: "বিভাগ ব্যবস্থাপনা", icon: Tag },
   { href: "/admin/users", label: "সদস্য ব্যবস্থাপনা", icon: Users },
-  { href: "/admin/borrowings", label: "ধার ব্যবস্থাপনা", icon: BookMarked },
+  { href: "/admin/borrowings", label: "বিতরণ ব্যবস্থাপনা", icon: BookMarked },
   { href: "/admin/overdue", label: "মেয়াদ উত্তীর্ণ", icon: AlertTriangle },
+  { href: "/admin/leadership", label: "নেতৃত্ব ব্যবস্থাপনা", icon: UserSquare2 },
+  { href: "/admin/programs", label: "কার্যক্রম ব্যবস্থাপনা", icon: Video },
   { href: "/admin/logs", label: "অডিট লগ", icon: ScrollText },
 ];
 
@@ -58,7 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Logo */}
         <div className="flex items-center gap-3 p-5 border-b border-white/10">
           <div className="w-9 h-9 rounded-xl overflow-hidden ring-2 ring-gold/40 shrink-0">
-            <Image src="/images/logo.jpg" alt="Logo" width={36} height={36} className="object-cover" />
+            <Image src="/images/logo.png" alt="Logo" width={36} height={36} className="object-cover" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-gold text-xs font-semibold font-bangla truncate">কাফেলা গ্রন্থাগার</p>

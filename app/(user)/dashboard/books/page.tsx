@@ -96,10 +96,10 @@ export default function BooksPage() {
     });
     const data = await res.json();
     if (res.ok) {
-      toast.success(`"${bookTitle}" সফলভাবে ধার নেওয়া হয়েছে!`);
+      toast.success(`"${bookTitle}" সফলভাবে বিতরণ নেওয়া হয়েছে!`);
       fetchBooks();
     } else {
-      toast.error(data.error || "ধার নিতে ব্যর্থ হয়েছে।");
+      toast.error(data.error || "বিতরণ নিতে ব্যর্থ হয়েছে।");
     }
   };
 
@@ -299,7 +299,7 @@ export default function BooksPage() {
                       className="flex-1 bg-primary hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-medium py-2 rounded-lg transition-colors font-bangla flex items-center justify-center gap-1"
                     >
                       <BookMarked size={13} />
-                      ধার নিন
+                      বিতরণ নিন
                     </button>
                   ) : (
                     <button

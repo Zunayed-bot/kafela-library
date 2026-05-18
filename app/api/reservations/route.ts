@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!book) return apiError("বই পাওয়া যায়নি।", 404);
-    if (book.availableCopies > 0) return apiError("বই এখন পাওয়া যাচ্ছে। সরাসরি ধার নিন।", 409);
+    if (book.availableCopies > 0) return apiError("বই এখন পাওয়া যাচ্ছে। সরাসরি নিন।", 409);
 
     const existing = await prisma.reservation.findFirst({
       where: { userId: session.userId, bookId, status: "PENDING" },

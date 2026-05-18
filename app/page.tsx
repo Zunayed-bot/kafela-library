@@ -3,12 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   BookOpen, Users, BookMarked, Award, ChevronRight, Star,
   Search, Menu, X, ArrowRight, Library, Globe, Lightbulb,
   Monitor, Video, Calendar, Mic, PenTool, Building2,
-  Clock, CheckCircle2, Sparkles, Heart,
+  Clock, CheckCircle2, Sparkles, Heart, ExternalLink, Play,
+  MapPin, Phone,
 } from "lucide-react";
 
 // ─── Animation Variants ───────────────────────────────────────────────────────
@@ -19,11 +20,6 @@ const fadeUp = {
 
 const stagger = {
   visible: { transition: { staggerChildren: 0.12 } },
-};
-
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.6 } },
 };
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
@@ -37,11 +33,7 @@ function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl overflow-hidden ring-2 ring-gold/40">
-              <Image src="/images/logo.jpg" alt="Logo" width={44} height={44} className="object-cover" />
-            </div>
-            <div className="hidden sm:block">
-              <p className="text-gold font-semibold text-sm leading-tight font-bangla">সিদ্দীকে আকবার রাযি.</p>
-              <p className="text-white/70 text-xs font-bangla">ছাত্র কাফেলা গ্রন্থাগার</p>
+              <Image src="/images/logo.png" alt="Logo" width={44} height={44} className="object-cover" />
             </div>
           </Link>
 
@@ -140,13 +132,13 @@ function HeroSection() {
       {/* Background */}
       <motion.div style={{ y }} className="absolute inset-0">
         <Image
-          src="/images/concepts/mosque.jpg"
-          alt="Background"
+          src="/images/home_page.jpg"
+          alt="Library Interior"
           fill
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-950/92 via-primary-900/85 to-primary-950/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-primary-950/90 via-primary-900/82 to-primary-950/93" />
       </motion.div>
 
       {/* Islamic geometric pattern overlay */}
@@ -202,31 +194,16 @@ function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* Stats floating card */}
+          {/* Logo display */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="hidden lg:grid grid-cols-2 gap-4"
+            className="hidden lg:flex items-center justify-center"
           >
-            {[
-              { icon: BookOpen, value: "২,৫০০+", label: "মোট বই", color: "text-gold" },
-              { icon: Users, value: "৩০০+", label: "সক্রিয় সদস্য", color: "text-emerald-400" },
-              { icon: BookMarked, value: "৫,০০০+", label: "সফল ধার", color: "text-blue-400" },
-              { icon: Award, value: "৩", label: "সদস্যপদ স্তর", color: "text-purple-400" },
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 + i * 0.1 }}
-                className="glass rounded-2xl p-6 border border-white/15 hover:border-gold/30 transition-all duration-300"
-              >
-                <stat.icon size={28} className={`${stat.color} mb-3`} />
-                <p className={`text-3xl font-bold font-english ${stat.color}`}>{stat.value}</p>
-                <p className="text-white/60 text-sm mt-1 font-bangla">{stat.label}</p>
-              </motion.div>
-            ))}
+            <div className="w-72 h-72 rounded-3xl overflow-hidden ring-4 ring-gold/30 shadow-gold-lg">
+              <Image src="/images/logo.png" alt="সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা" width={288} height={288} className="object-contain w-full h-full bg-white/5" />
+            </div>
           </motion.div>
         </div>
       </motion.div>
@@ -251,13 +228,21 @@ function HeroSection() {
   );
 }
 
-// ─── Stats Section ─────────────────────────────────────────────────────────────
+// ─── Stats Section (Live from DB) ─────────────────────────────────────────────
 function StatsSection() {
+  const [data, setData] = useState({ totalBooks: 0, totalUsers: 0, totalCategories: 0, totalBorrowings: 0 });
+
+  useEffect(() => {
+    fetch("/api/public/stats")
+      .then(r => r.json())
+      .then(d => d.success && setData(d.data));
+  }, []);
+
   const stats = [
-    { value: "২,৫০০+", label: "মোট বই সংগ্রহ", icon: BookOpen, desc: "ইসলামি ও আধুনিক জ্ঞানের বিশাল ভান্ডার" },
-    { value: "৩০০+", label: "নিবন্ধিত সদস্য", icon: Users, desc: "তিন স্তরের বিশেষ সদস্যপদ" },
-    { value: "১৫+", label: "বিভাগ", icon: Library, desc: "বিভিন্ন জ্ঞানশাখার শ্রেণিবদ্ধ সংগ্রহ" },
-    { value: "৫,০০০+", label: "সফল ধার", icon: BookMarked, desc: "জ্ঞানচর্চার অব্যাহত ধারা" },
+    { value: data.totalBooks > 0 ? `${data.totalBooks}+` : "২,৫০০+", label: "মোট বই সংগ্রহ", icon: BookOpen, desc: "ইসলামি ও আধুনিক জ্ঞানের বিশাল ভান্ডার" },
+    { value: data.totalUsers > 0 ? `${data.totalUsers}+` : "৩০০+", label: "নিবন্ধিত সদস্য", icon: Users, desc: "তিন স্তরের বিশেষ সদস্যপদ" },
+    { value: data.totalCategories > 0 ? `${data.totalCategories}+` : "১৫+", label: "বিভাগ", icon: Library, desc: "বিভিন্ন জ্ঞানশাখার শ্রেণিবদ্ধ সংগ্রহ" },
+    { value: data.totalBorrowings > 0 ? `${data.totalBorrowings}+` : "৫,০০০+", label: "সফল বিতরণ", icon: BookMarked, desc: "জ্ঞানচর্চার অব্যাহত ধারা" },
   ];
 
   return (
@@ -366,16 +351,36 @@ function AboutSection() {
   );
 }
 
-// ─── Programs Section ─────────────────────────────────────────────────────────
+// ─── Programs Section (Dynamic from DB) ──────────────────────────────────────
+interface ProgramEvent {
+  id: string;
+  title: string;
+  description?: string;
+  videoUrl?: string;
+  thumbnail?: string;
+  colorClass: string;
+}
+
 function ProgramsSection() {
-  const programs = [
-    { icon: Mic, title: "বিশুদ্ধ বাংলা বক্তৃতা", desc: "নৈতিক চরিত্র, শালীনতা ও যোগাযোগ দক্ষতা উন্নয়ন", color: "bg-emerald-500" },
-    { icon: Globe, title: "আরবী বক্তৃতা", desc: "মুসলিম উম্মাহর সাথে সেতুবন্ধন তৈরি করতে আরবিতে দাওয়াহ", color: "bg-amber-500" },
-    { icon: Globe, title: "ইংরেজি বক্তৃতা", desc: "বিশ্বের ১৩৫ কোটি ইংরেজিভাষী মানুষের কাছে হিদায়াতের বার্তা", color: "bg-blue-500" },
-    { icon: BookOpen, title: "অধ্যয়ন ও জ্ঞান সাধন", desc: "সমৃদ্ধ পাঠাগার ও নিয়মিত জ্ঞানচর্চার আয়োজন", color: "bg-purple-500" },
-    { icon: PenTool, title: "লেখালেখি প্রশিক্ষণ", desc: "প্রবন্ধ, গল্প, কবিতা, বই রচনায় দক্ষতা অর্জন", color: "bg-rose-500" },
-    { icon: Monitor, title: "প্রযুক্তিবিদ্যা ও মিডিয়া", desc: "AI যুগে উম্মাহর প্রযুক্তিগত নেতৃত্বের প্রস্তুতি", color: "bg-cyan-500" },
+  const [programs, setPrograms] = useState<ProgramEvent[]>([]);
+  const [activeVideo, setActiveVideo] = useState<ProgramEvent | null>(null);
+
+  useEffect(() => {
+    fetch("/api/public/programs")
+      .then(r => r.json())
+      .then(d => d.success && setPrograms(d.data));
+  }, []);
+
+  const fallback: ProgramEvent[] = [
+    { id: "f1", title: "বিশুদ্ধ বাংলা বক্তৃতা", description: "নৈতিক চরিত্র, শালীনতা ও যোগাযোগ দক্ষতা উন্নয়ন", colorClass: "bg-emerald-500" },
+    { id: "f2", title: "আরবী বক্তৃতা", description: "মুসলিম উম্মাহর সাথে সেতুবন্ধন তৈরি করতে আরবিতে দাওয়াহ", colorClass: "bg-amber-500" },
+    { id: "f3", title: "ইংরেজি বক্তৃতা", description: "বিশ্বের ইংরেজিভাষী মানুষের কাছে হিদায়াতের বার্তা", colorClass: "bg-blue-500" },
+    { id: "f4", title: "অধ্যয়ন ও জ্ঞান সাধন", description: "সমৃদ্ধ পাঠাগার ও নিয়মিত জ্ঞানচর্চার আয়োজন", colorClass: "bg-purple-500" },
+    { id: "f5", title: "লেখালেখি প্রশিক্ষণ", description: "প্রবন্ধ, গল্প, কবিতা, বই রচনায় দক্ষতা অর্জন", colorClass: "bg-rose-500" },
+    { id: "f6", title: "প্রযুক্তিবিদ্যা ও মিডিয়া", description: "AI যুগে উম্মাহর প্রযুক্তিগত নেতৃত্বের প্রস্তুতি", colorClass: "bg-cyan-500" },
   ];
+
+  const displayPrograms = programs.length > 0 ? programs : fallback;
 
   return (
     <section className="py-24 bg-surface-2">
@@ -406,21 +411,79 @@ function ProgramsSection() {
           variants={stagger}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {programs.map((program, i) => (
-            <motion.div
-              key={i}
+          {displayPrograms.map((program, i) => (
+            <motion.button
+              key={program.id}
               variants={fadeUp}
-              className="group bg-white rounded-2xl p-6 border border-gray-100 hover:border-gold/30 hover:shadow-card-hover transition-all duration-300 card-hover"
+              onClick={() => program.videoUrl && setActiveVideo(program)}
+              className={`group bg-white rounded-2xl p-6 border border-gray-100 hover:border-gold/30 hover:shadow-card-hover transition-all duration-300 card-hover text-left w-full ${program.videoUrl ? "cursor-pointer" : "cursor-default"}`}
             >
-              <div className={`w-12 h-12 ${program.color} rounded-xl flex items-center justify-center mb-4`}>
-                <program.icon size={22} className="text-white" />
+              <div className="flex items-start justify-between mb-4">
+                <div className={`w-12 h-12 ${program.colorClass} rounded-xl flex items-center justify-center`}>
+                  <Video size={22} className="text-white" />
+                </div>
+                {program.videoUrl && (
+                  <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Play size={14} className="text-primary" />
+                  </div>
+                )}
               </div>
               <h3 className="font-bold text-gray-900 font-bangla mb-2 text-lg">{program.title}</h3>
-              <p className="text-gray-500 text-sm font-bangla leading-relaxed">{program.desc}</p>
-            </motion.div>
+              {program.description && <p className="text-gray-500 text-sm font-bangla leading-relaxed">{program.description}</p>}
+              {program.videoUrl && (
+                <p className="text-primary text-xs font-bangla mt-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Play size={10} />
+                  ভিডিও দেখুন
+                </p>
+              )}
+            </motion.button>
           ))}
         </motion.div>
       </div>
+
+      {/* Video Modal */}
+      {activeVideo && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setActiveVideo(null)}
+        >
+          <motion.div
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            className="bg-white rounded-2xl w-full max-w-lg overflow-hidden"
+            onClick={e => e.stopPropagation()}
+          >
+            {activeVideo.thumbnail && (
+              <div className="relative h-48 bg-gray-100">
+                <Image src={activeVideo.thumbnail} alt={activeVideo.title} fill className="object-cover" />
+              </div>
+            )}
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="font-bold text-gray-900 font-bangla text-xl">{activeVideo.title}</h3>
+                <button onClick={() => setActiveVideo(null)} className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center shrink-0">
+                  <X size={18} className="text-gray-500" />
+                </button>
+              </div>
+              {activeVideo.description && <p className="text-gray-600 font-bangla text-sm mb-4">{activeVideo.description}</p>}
+              {activeVideo.videoUrl && (
+                <a
+                  href={activeVideo.videoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-700 text-white font-bangla font-medium px-6 py-3 rounded-xl transition-colors"
+                >
+                  <ExternalLink size={18} />
+                  ভিডিও দেখুন
+                </a>
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </section>
   );
 }
@@ -428,6 +491,15 @@ function ProgramsSection() {
 // ─── Membership Section ───────────────────────────────────────────────────────
 function MembershipSection() {
   const tiers = [
+    {
+      name: "সাধারণ",
+      english: "General",
+      color: "border-gray-300",
+      badge: "bg-gray-100 text-gray-700",
+      icon: "👤",
+      desc: "সকল নিবন্ধিত সদস্যের জন্য মৌলিক সদস্যপদ।",
+      features: ["গ্রন্থাগার ব্যবহারের সুযোগ", "সাধারণ কার্যক্রমে অংশগ্রহণ", "মৌলিক সদস্য সুবিধা"],
+    },
     {
       name: "আল ফিদ্দাহ",
       english: "Al Fiddah • Silver",
@@ -482,13 +554,13 @@ function MembershipSection() {
           whileInView="visible"
           viewport={{ once: true }}
           variants={stagger}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
           {tiers.map((tier, i) => (
             <motion.div
               key={i}
               variants={fadeUp}
-              className={`relative rounded-2xl p-8 border-2 ${tier.color} ${tier.featured ? "shadow-gold-lg scale-105" : "shadow-card"} transition-all duration-300 hover:shadow-card-hover bg-white`}
+              className={`relative rounded-2xl p-7 border-2 ${tier.color} ${tier.featured ? "shadow-gold-lg scale-105" : "shadow-card"} transition-all duration-300 hover:shadow-card-hover bg-white`}
             >
               {tier.featured && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gold text-white text-xs font-medium px-4 py-1 rounded-full font-bangla">
@@ -517,28 +589,31 @@ function MembershipSection() {
   );
 }
 
-// ─── Leadership Section ───────────────────────────────────────────────────────
+// ─── Leadership Section (Dynamic from DB) ────────────────────────────────────
+interface Leader {
+  id: string;
+  name: string;
+  role: string;
+  description?: string;
+  photo?: string;
+}
+
 function LeadershipSection() {
-  const leaders = [
-    {
-      name: "মুফতী খালেদ সাইফুল্লাহ",
-      role: "প্রধান উপদেষ্টা",
-      desc: "সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা",
-      image: "/images/leaders/leader1.jpg",
-    },
-    {
-      name: "মুফতী আহমাদ মাসউদ",
-      role: "উপদেষ্টা ও প্রধান দিক নির্দেশক",
-      desc: "সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা",
-      image: "/images/leaders/leader2.jpg",
-    },
-    {
-      name: "মুফতী ওয়াসিফ আরাফ",
-      role: "উপদেষ্টা ও তত্ত্বাবধায়ক",
-      desc: "সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা",
-      image: "/images/leaders/leader3.jpg",
-    },
+  const [leaders, setLeaders] = useState<Leader[]>([]);
+
+  useEffect(() => {
+    fetch("/api/public/leaders")
+      .then(r => r.json())
+      .then(d => d.success && setLeaders(d.data));
+  }, []);
+
+  const fallback: Leader[] = [
+    { id: "l1", name: "মুফতী খালেদ সাইফুল্লাহ", role: "প্রধান উপদেষ্টা", description: "সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা", photo: "/images/leaders/leader1.jpg" },
+    { id: "l2", name: "মুফতী আহমাদ মাসউদ", role: "উপদেষ্টা ও প্রধান দিক নির্দেশক", description: "সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা", photo: "/images/leaders/leader2.jpg" },
+    { id: "l3", name: "মুফতী ওয়াসিফ আরাফ", role: "উপদেষ্টা ও তত্ত্বাবধায়ক", description: "সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা", photo: "/images/leaders/leader3.jpg" },
   ];
+
+  const displayLeaders = leaders.length > 0 ? leaders : fallback;
 
   return (
     <section id="leadership" className="py-24 bg-surface-2">
@@ -569,20 +644,26 @@ function LeadershipSection() {
           variants={stagger}
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
-          {leaders.map((leader, i) => (
+          {displayLeaders.map((leader, i) => (
             <motion.div
-              key={i}
+              key={leader.id}
               variants={fadeUp}
               className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-gold/30 hover:shadow-gold transition-all duration-400 card-hover"
             >
               {/* Photo */}
               <div className="relative h-64 overflow-hidden bg-primary-50">
-                <Image
-                  src={leader.image}
-                  alt={leader.name}
-                  fill
-                  className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                />
+                {leader.photo ? (
+                  <Image
+                    src={leader.photo}
+                    alt={leader.name}
+                    fill
+                    className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-primary-200 font-bold text-6xl font-bangla">
+                    {leader.name.charAt(0)}
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-primary-950/60 via-transparent to-transparent" />
               </div>
 
@@ -593,7 +674,7 @@ function LeadershipSection() {
                   <span className="text-gold text-xs font-medium font-bangla">{leader.role}</span>
                 </div>
                 <h3 className="text-xl font-bold text-primary font-bangla-serif mb-1">{leader.name}</h3>
-                <p className="text-gray-500 text-sm font-bangla">{leader.desc}</p>
+                {leader.description && <p className="text-gray-500 text-sm font-bangla">{leader.description}</p>}
               </div>
             </motion.div>
           ))}
@@ -606,62 +687,14 @@ function LeadershipSection() {
 // ─── Future Vision Section ────────────────────────────────────────────────────
 function FutureVisionSection() {
   const visions = [
-    {
-      image: "/images/concepts/hall.jpg",
-      title: "গ্র্যান্ড ইভেন্ট হল",
-      desc: "বার্ষিক সম্মেলন, মাহফিল ও বিশেষ অনুষ্ঠানের জন্য প্রিমিয়াম মিলনায়তন।",
-      tag: "ভবিষ্যৎ পরিকল্পনা",
-      icon: Building2,
-    },
-    {
-      image: "/images/concepts/conference.jpg",
-      title: "কনফারেন্স ও সেমিনার রুম",
-      desc: "উচ্চ মানের আলোচনা সভা, সেমিনার ও কর্মশালার জন্য আধুনিক কক্ষ।",
-      tag: "আসছে শীঘ্রই",
-      icon: Mic,
-    },
-    {
-      image: "/images/concepts/auditorium.jpg",
-      title: "মিডিয়া অডিটোরিয়াম",
-      desc: "লাইভ স্ট্রিমিং ও রেকর্ডিং সুবিধাসহ আধুনিক অডিটোরিয়াম।",
-      tag: "ভবিষ্যৎ পরিকল্পনা",
-      icon: Video,
-    },
-    {
-      image: "/images/concepts/tech-lab.jpg",
-      title: "টেক ল্যাব ও কম্পিউটার রুম",
-      desc: "AI ও প্রযুক্তি শিক্ষার জন্য অত্যাধুনিক কম্পিউটার ল্যাবরেটরি।",
-      tag: "আসছে শীঘ্রই",
-      icon: Monitor,
-    },
-    {
-      image: "/images/concepts/studio.jpg",
-      title: "মিডিয়া প্রোডাকশন স্টুডিও",
-      desc: "ভিডিও প্রোডাকশন, পডকাস্ট ও ডিজিটাল কনটেন্ট তৈরির পূর্ণাঙ্গ স্টুডিও।",
-      tag: "ভবিষ্যৎ পরিকল্পনা",
-      icon: Video,
-    },
-    {
-      image: "/images/concepts/manuscript.jpg",
-      title: "ডিজিটাল আর্কাইভ",
-      desc: "ইসলামি পাণ্ডুলিপি ও বিরল গ্রন্থের ডিজিটাল সংরক্ষণ ও গবেষণা কেন্দ্র।",
-      tag: "পরিকল্পনাধীন",
-      icon: Library,
-    },
-    {
-      image: "/images/concepts/lecture.jpg",
-      title: "স্মার্ট লেকচার হল",
-      desc: "ইন্টারেক্টিভ ডিসপ্লে ও স্মার্ট টেকনোলজিসহ আধুনিক পাঠকক্ষ।",
-      tag: "আসছে শীঘ্রই",
-      icon: Lightbulb,
-    },
-    {
-      image: "/images/concepts/study-circle.jpg",
-      title: "ইলম সার্কেল ও স্টাডি লাউঞ্জ",
-      desc: "গ্রুপ স্টাডি ও হালাকার জন্য আরামদায়ক, অনুপ্রেরণাদায়ক পরিবেশ।",
-      tag: "পরিকল্পনাধীন",
-      icon: BookOpen,
-    },
+    { image: "/images/concepts/hall.jpg", title: "গ্র্যান্ড ইভেন্ট হল", desc: "বার্ষিক সম্মেলন, মাহফিল ও বিশেষ অনুষ্ঠানের জন্য প্রিমিয়াম মিলনায়তন।", tag: "ভবিষ্যৎ পরিকল্পনা", icon: Building2 },
+    { image: "/images/concepts/conference.jpg", title: "কনফারেন্স ও সেমিনার রুম", desc: "উচ্চ মানের আলোচনা সভা, সেমিনার ও কর্মশালার জন্য আধুনিক কক্ষ।", tag: "আসছে শীঘ্রই", icon: Mic },
+    { image: "/images/concepts/auditorium.jpg", title: "মিডিয়া অডিটোরিয়াম", desc: "লাইভ স্ট্রিমিং ও রেকর্ডিং সুবিধাসহ আধুনিক অডিটোরিয়াম।", tag: "ভবিষ্যৎ পরিকল্পনা", icon: Video },
+    { image: "/images/concepts/tech-lab.jpg", title: "টেক ল্যাব ও কম্পিউটার রুম", desc: "AI ও প্রযুক্তি শিক্ষার জন্য অত্যাধুনিক কম্পিউটার ল্যাবরেটরি।", tag: "আসছে শীঘ্রই", icon: Monitor },
+    { image: "/images/concepts/studio.jpg", title: "মিডিয়া প্রোডাকশন স্টুডিও", desc: "ভিডিও প্রোডাকশন, পডকাস্ট ও ডিজিটাল কনটেন্ট তৈরির পূর্ণাঙ্গ স্টুডিও।", tag: "ভবিষ্যৎ পরিকল্পনা", icon: Video },
+    { image: "/images/concepts/manuscript.jpg", title: "ডিজিটাল আর্কাইভ", desc: "ইসলামি পাণ্ডুলিপি ও বিরল গ্রন্থের ডিজিটাল সংরক্ষণ ও গবেষণা কেন্দ্র।", tag: "পরিকল্পনাধীন", icon: Library },
+    { image: "/images/concepts/lecture.jpg", title: "স্মার্ট লেকচার হল", desc: "ইন্টারেক্টিভ ডিসপ্লে ও স্মার্ট টেকনোলজিসহ আধুনিক পাঠকক্ষ।", tag: "আসছে শীঘ্রই", icon: Lightbulb },
+    { image: "/images/concepts/study-circle.jpg", title: "ইলম সার্কেল ও স্টাডি লাউঞ্জ", desc: "গ্রুপ স্টাডি ও হালাকার জন্য আরামদায়ক, অনুপ্রেরণাদায়ক পরিবেশ।", tag: "পরিকল্পনাধীন", icon: BookOpen },
   ];
 
   const tagColors: Record<string, string> = {
@@ -713,28 +746,16 @@ function FutureVisionSection() {
               variants={fadeUp}
               className="group relative rounded-2xl overflow-hidden border border-white/10 hover:border-gold/40 transition-all duration-400 card-hover cursor-default"
             >
-              {/* Image */}
               <div className="relative h-44 overflow-hidden">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
-                />
+                <Image src={item.image} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary-950/90 via-primary-900/50 to-transparent" />
-                {/* Tag */}
                 <div className="absolute top-3 left-3">
-                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full font-bangla ${tagColors[item.tag]}`}>
-                    {item.tag}
-                  </span>
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full font-bangla ${tagColors[item.tag]}`}>{item.tag}</span>
                 </div>
-                {/* Icon */}
                 <div className="absolute top-3 right-3 w-8 h-8 glass rounded-lg flex items-center justify-center">
                   <item.icon size={15} className="text-gold" />
                 </div>
               </div>
-
-              {/* Content */}
               <div className="p-4 glass-dark border-t border-white/5">
                 <h3 className="font-bold text-white font-bangla mb-1.5 text-sm leading-snug">{item.title}</h3>
                 <p className="text-white/50 text-xs font-bangla leading-relaxed">{item.desc}</p>
@@ -743,7 +764,6 @@ function FutureVisionSection() {
           ))}
         </motion.div>
 
-        {/* Vision note */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -810,7 +830,7 @@ function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-gold/40">
-                <Image src="/images/logo.jpg" alt="Logo" width={48} height={48} className="object-cover" />
+                <Image src="/images/logo.png" alt="Logo" width={48} height={48} className="object-cover" />
               </div>
               <div>
                 <p className="text-white font-bold font-bangla-serif text-lg">সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা</p>
@@ -849,9 +869,15 @@ function Footer() {
           {/* Contact */}
           <div>
             <h4 className="text-white font-semibold font-bangla mb-4">যোগাযোগ</h4>
-            <div className="space-y-2 text-sm font-bangla">
-              <p>জামিয়াতুস সাহাবা</p>
-              <p>ঢাকা, বাংলাদেশ</p>
+            <div className="space-y-3 text-sm font-bangla">
+              <div className="flex items-start gap-2">
+                <MapPin size={14} className="text-gold mt-0.5 shrink-0" />
+                <p>১৮৮, কুতুবখালী, দোনিয়া, যাত্রাবাড়ী, ঢাকা</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone size={14} className="text-gold shrink-0" />
+                <p>০১৯৭৪ ২৭১৩৫৭</p>
+              </div>
               <div className="divider-gold my-4 opacity-30" />
               <p className="text-white/40 text-xs font-english">
                 Designed & Developed by

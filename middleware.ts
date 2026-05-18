@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isPublic = publicRoutes.some(
-    (r) => pathname === r || pathname.startsWith("/api/auth") || pathname.startsWith("/_next") || pathname.startsWith("/images") || pathname.startsWith("/uploads")
+    (r) => pathname === r || pathname.startsWith("/api/auth") || pathname.startsWith("/api/public") || pathname.startsWith("/_next") || pathname.startsWith("/images") || pathname.startsWith("/uploads")
   );
 
   const session = await getSessionFromRequest(request);

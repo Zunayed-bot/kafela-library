@@ -124,7 +124,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
   });
 
   if (activeBorrowings > 0) {
-    return apiError("এই সদস্যের ধার করা বই রয়েছে। মুছতে পারবেন না।", 409);
+    return apiError("এই সদস্যের বিতরণকৃত বই রয়েছে। মুছতে পারবেন না।", 409);
   }
 
   await prisma.user.delete({ where: { id: params.id } });

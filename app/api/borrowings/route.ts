@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (activeBorrowings >= user.borrowLimit) {
-      return apiError(`সীমা অতিক্রম। আপনি সর্বোচ্চ ${user.borrowLimit}টি বই ধার নিতে পারবেন।`, 409);
+      return apiError(`সীমা অতিক্রম। আপনি সর্বোচ্চ ${user.borrowLimit}টি বই নিতে পারবেন।`, 409);
     }
 
     // Check book
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
     const duplicate = await prisma.borrowing.findFirst({
       where: { userId: targetUserId, bookId, status: { in: ["ACTIVE", "OVERDUE"] } },
     });
-    if (duplicate) return apiError("আপনি ইতিমধ্যে এই বই ধার নিয়েছেন।", 409);
+    if (duplicate) return apiError("আপনি ইতিমধ্যে এই বই নিয়েছেন।", 409);
 
     const days = borrowDays ? parseInt(borrowDays) : 14;
     const dueDate = calculateDueDate(days);
@@ -133,9 +133,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return apiResponse(borrowing, "বই সফলভাবে ধার দেওয়া হয়েছে।", 201);
+    return apiResponse(borrowing, "বই সফলভাবে বিতরণ দেওয়া হয়েছে।", 201);
   } catch (err) {
     console.error("[BORROWINGS POST]", err);
-    return apiError("ধার প্রক্রিয়া ব্যর্থ হয়েছে।", 500);
+    return apiError("বিতরণ প্রক্রিয়া ব্যর্থ হয়েছে।", 500);
   }
 }

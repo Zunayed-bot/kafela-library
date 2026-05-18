@@ -53,7 +53,7 @@ export default function BorrowedPage() {
     });
     const data = await res.json();
     if (res.ok) {
-      toast.success("ধারের মেয়াদ নবায়ন হয়েছে!");
+      toast.success("বিতরণের মেয়াদ নবায়ন হয়েছে!");
       fetchBorrowings();
     } else {
       toast.error(data.error || "নবায়ন ব্যর্থ হয়েছে।");
@@ -66,8 +66,8 @@ export default function BorrowedPage() {
   return (
     <div className="max-w-3xl space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-primary font-bangla-serif">ধার ইতিহাস</h1>
-        <p className="text-gray-500 text-sm font-bangla mt-0.5">আপনার সকল ধারের রেকর্ড</p>
+        <h1 className="text-2xl font-bold text-primary font-bangla-serif">বিতরণ ইতিহাস</h1>
+        <p className="text-gray-500 text-sm font-bangla mt-0.5">আপনার সকল বিতরণের রেকর্ড</p>
       </div>
 
       {overdueCount > 0 && (

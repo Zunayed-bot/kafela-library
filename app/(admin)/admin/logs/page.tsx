@@ -57,7 +57,7 @@ const ACTION_LABELS: Record<string, string> = {
   BOOK_DELETED: "বই মুছে ফেলা",
   BOOK_ISSUED: "বই ইস্যু",
   BOOK_RETURNED: "বই ফেরত",
-  BOOK_RENEWED: "ধার নবায়ন",
+  BOOK_RENEWED: "বিতরণ নবায়ন",
   BOOK_RESERVED: "বই রিজার্ভ",
   USER_CREATED: "সদস্য যোগ",
   USER_UPDATED: "সদস্য আপডেট",

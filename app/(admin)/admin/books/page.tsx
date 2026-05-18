@@ -16,6 +16,8 @@ interface Book {
   titleBangla?: string;
   author: string;
   authorBangla?: string;
+  translator?: string;
+  translatorBangla?: string;
   publisher?: string;
   publisherBangla?: string;
   isbn?: string;
@@ -31,12 +33,6 @@ interface Book {
   publishedYear?: number;
 }
 
-const CATEGORIES = [
-  "ইসলামি সাহিত্য", "ফিকহ ও আইন", "হাদিস", "তাফসির", "আকিদা", "সিরাত",
-  "ইতিহাস", "দর্শন", "বিজ্ঞান ও প্রযুক্তি", "সাহিত্য ও কবিতা",
-  "ভাষা ও ব্যাকরণ", "চিকিৎসা", "সমাজবিজ্ঞান", "রাজনীতি", "অন্যান্য",
-];
-
 const LANGUAGES = ["বাংলা", "আরবি", "ইংরেজি", "উর্দু", "ফার্সি"];
 
 const STATUS_OPTS = [
@@ -48,7 +44,8 @@ const STATUS_OPTS = [
 
 const emptyForm = {
   title: "", titleBangla: "", author: "", authorBangla: "",
-  publisher: "", publisherBangla: "", isbn: "", category: "ইসলামি সাহিত্য",
+  translator: "", translatorBangla: "",
+  publisher: "", publisherBangla: "", isbn: "", category: "",
   description: "", shelfNumber: "", totalCopies: 1, price: "",
   status: "AVAILABLE", language: "বাংলা", publishedYear: "",
 };
@@ -61,6 +58,7 @@ export default function AdminBooksPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [dbCategories, setDbCategories] = useState<string[]>([]);
   const limit = 12;
 
   const [modal, setModal] = useState<"add" | "edit" | null>(null);
@@ -92,6 +90,13 @@ export default function AdminBooksPage() {
     setLoading(false);
   };
 
+  const fetchCategories = async () => {
+    const res = await fetch("/api/admin/categories");
+    const data = await res.json();
+    if (data.success) setDbCategories(data.data.map((c: { name: string }) => c.name));
+  };
+
+  useEffect(() => { fetchCategories(); }, []);
   useEffect(() => { fetchBooks(); }, [page, search, categoryFilter, statusFilter]);
 
   const openAdd = () => {
@@ -109,6 +114,8 @@ export default function AdminBooksPage() {
       titleBangla: book.titleBangla || "",
       author: book.author,
       authorBangla: book.authorBangla || "",
+      translator: book.translator || "",
+      translatorBangla: book.translatorBangla || "",
       publisher: book.publisher || "",
       publisherBangla: book.publisherBangla || "",
       isbn: book.isbn || "",
@@ -259,7 +266,7 @@ export default function AdminBooksPage() {
               className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-bangla focus:outline-none focus:border-primary bg-white"
             >
               <option value="">সব বিভাগ</option>
-              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              {dbCategories.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
             <select
               value={statusFilter}
@@ -487,6 +494,30 @@ export default function AdminBooksPage() {
                   </div>
                 </div>
 
+                {/* Translator */}
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 font-bangla mb-1.5">অনুবাদক (ঐচ্ছিক)</label>
+                    <input
+                      type="text"
+                      value={form.translator}
+                      onChange={(e) => setForm((f) => ({ ...f, translator: e.target.value }))}
+                      className="input-primary"
+                      placeholder="Translator name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 font-bangla mb-1.5">অনুবাদক (বাংলা)</label>
+                    <input
+                      type="text"
+                      value={form.translatorBangla}
+                      onChange={(e) => setForm((f) => ({ ...f, translatorBangla: e.target.value }))}
+                      className="input-primary font-bangla"
+                      placeholder="অনুবাদকের বাংলা নাম"
+                    />
+                  </div>
+                </div>
+
                 {/* Publisher */}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
@@ -523,7 +554,8 @@ export default function AdminBooksPage() {
                       className="input-primary font-bangla"
                       required
                     >
-                      {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                      <option value="">বিভাগ বেছে নিন</option>
+                      {dbCategories.map((c) => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>
@@ -656,7 +688,7 @@ export default function AdminBooksPage() {
               </div>
               <h3 className="text-center font-bold text-gray-900 font-bangla text-lg mb-2">বই মুছে ফেলবেন?</h3>
               <p className="text-center text-gray-500 text-sm font-bangla mb-6">
-                এই বই স্থায়ীভাবে মুছে যাবে। সক্রিয় ধার থাকলে মুছে ফেলা যাবে না।
+                এই বই স্থায়ীভাবে মুছে যাবে। সক্রিয় বিতরণ থাকলে মুছে ফেলা যাবে না।
               </p>
               <div className="flex gap-3">
                 <button

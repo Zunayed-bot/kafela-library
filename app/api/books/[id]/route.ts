@@ -31,9 +31,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   try {
     const body = await request.json();
     const {
-      title, titleBangla, author, authorBangla, publisher, publishedYear,
-      isbn, category, description, coverImage, totalCopies, shelfNumber,
-      price, language, status,
+      title, titleBangla, author, authorBangla, translator, translatorBangla,
+      publisher, publishedYear, isbn, category, description, coverImage,
+      totalCopies, shelfNumber, price, language, status,
     } = body;
 
     const existing = await prisma.book.findUnique({
@@ -50,7 +50,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const book = await prisma.book.update({
       where: { id: params.id },
       data: {
-        title, titleBangla, author, authorBangla, publisher,
+        title, titleBangla, author, authorBangla, translator, translatorBangla,
+        publisher,
         publishedYear: publishedYear ? parseInt(publishedYear) : undefined,
         isbn, category, description, coverImage,
         totalCopies: newTotal, availableCopies: newAvailable,
@@ -86,7 +87,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
   });
 
   if (activeBorrowings > 0) {
-    return apiError("এই বই বর্তমানে ধার দেওয়া আছে। মুছতে পারবেন না।", 409);
+    return apiError("এই বই বর্তমানে বিতরণ দেওয়া আছে। মুছতে পারবেন না।", 409);
   }
 
   const book = await prisma.book.findUnique({ where: { id: params.id }, select: { title: true } });

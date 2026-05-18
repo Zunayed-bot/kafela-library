@@ -21,18 +21,20 @@ interface UserData {
 const navItems = [
   { href: "/dashboard", label: "ড্যাশবোর্ড", icon: LayoutDashboard },
   { href: "/dashboard/books", label: "বই খুঁজুন", icon: BookOpen },
-  { href: "/dashboard/borrowed", label: "ধার করা বই", icon: History },
+  { href: "/dashboard/borrowed", label: "বিতরণকৃত বই", icon: History },
   { href: "/dashboard/reservations", label: "রিজার্ভেশন", icon: Bookmark },
   { href: "/dashboard/profile", label: "প্রোফাইল", icon: User },
 ];
 
 const tierColors: Record<string, string> = {
+  GENERAL: "bg-gray-100 text-gray-700",
   SILVER: "bg-slate-100 text-slate-700",
   GOLDEN: "bg-amber-100 text-amber-700",
   PLATINUM: "bg-teal-100 text-teal-700",
 };
 
 const tierLabels: Record<string, string> = {
+  GENERAL: "সাধারণ",
   SILVER: "সিলভার",
   GOLDEN: "গোল্ডেন",
   PLATINUM: "প্লাটিনাম",
@@ -85,7 +87,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
               {/* Sidebar header */}
               <div className="flex items-center gap-3 p-5 border-b border-white/10">
                 <div className="w-9 h-9 rounded-xl overflow-hidden ring-2 ring-gold/40 shrink-0">
-                  <Image src="/images/logo.jpg" alt="Logo" width={36} height={36} className="object-cover" />
+                  <Image src="/images/logo.png" alt="Logo" width={36} height={36} className="object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-gold text-xs font-medium font-bangla truncate">কাফেলা গ্রন্থাগার</p>

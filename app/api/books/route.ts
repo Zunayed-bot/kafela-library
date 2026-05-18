@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
       orderBy: { [sortField]: order },
       select: {
         id: true, title: true, titleBangla: true, author: true, authorBangla: true,
+        translator: true, translatorBangla: true,
         publisher: true, publishedYear: true, isbn: true, category: true,
         description: true, coverImage: true, totalCopies: true, availableCopies: true,
         shelfNumber: true, price: true, language: true, status: true,
@@ -75,9 +76,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
-      title, titleBangla, author, authorBangla, publisher, publishedYear,
-      isbn, category, description, coverImage, totalCopies, shelfNumber,
-      price, language,
+      title, titleBangla, author, authorBangla, translator, translatorBangla,
+      publisher, publishedYear, isbn, category, description, coverImage,
+      totalCopies, shelfNumber, price, language,
     } = body;
 
     if (!title || !author || !category) {
@@ -88,7 +89,8 @@ export async function POST(request: NextRequest) {
 
     const book = await prisma.book.create({
       data: {
-        title, titleBangla, author, authorBangla, publisher,
+        title, titleBangla, author, authorBangla, translator, translatorBangla,
+        publisher,
         publishedYear: publishedYear ? parseInt(publishedYear) : undefined,
         isbn, category, description, coverImage,
         totalCopies: copies, availableCopies: copies,

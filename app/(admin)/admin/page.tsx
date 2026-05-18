@@ -62,12 +62,12 @@ export default function AdminDashboardPage() {
   }
 
   const statsCards = [
-    { label: "মোট বই", value: banglaNumber(stats.totalBooks), icon: BookOpen, color: "bg-primary", change: `${banglaNumber(stats.availableBooks)} উপলব্ধ` },
-    { label: "সক্রিয় সদস্য", value: banglaNumber(stats.activeUsers), icon: Users, color: "bg-emerald-600", change: `${banglaNumber(stats.pendingUsers)} অপেক্ষমাণ` },
-    { label: "ইস্যু করা বই", value: banglaNumber(stats.issuedBooks), icon: BookMarked, color: "bg-blue-600", change: `আজ ${banglaNumber(stats.issuedToday)}টি ইস্যু` },
-    { label: "মেয়াদ উত্তীর্ণ", value: banglaNumber(stats.overdueBooks), icon: AlertTriangle, color: "bg-red-600", change: "অবিলম্বে ব্যবস্থা নিন" },
-    { label: "আজ ফেরত", value: banglaNumber(stats.returnedToday), icon: RotateCcw, color: "bg-purple-600", change: "সফল রিটার্ন" },
-    { label: "রিজার্ভেশন", value: banglaNumber(stats.reservations), icon: Bookmark, color: "bg-amber-600", change: "অপেক্ষায় আছে" },
+    { label: "মোট বই", value: banglaNumber(stats.totalBooks), icon: BookOpen, color: "bg-primary", change: `${banglaNumber(stats.availableBooks)} উপলব্ধ`, href: "/admin/books" },
+    { label: "সক্রিয় সদস্য", value: banglaNumber(stats.activeUsers), icon: Users, color: "bg-emerald-600", change: `${banglaNumber(stats.pendingUsers)} অপেক্ষমাণ`, href: "/admin/users" },
+    { label: "বিতরণকৃত বই", value: banglaNumber(stats.issuedBooks), icon: BookMarked, color: "bg-blue-600", change: `আজ ${banglaNumber(stats.issuedToday)}টি ইস্যু`, href: "/admin/borrowings" },
+    { label: "মেয়াদ উত্তীর্ণ", value: banglaNumber(stats.overdueBooks), icon: AlertTriangle, color: "bg-red-600", change: "অবিলম্বে ব্যবস্থা নিন", href: "/admin/overdue" },
+    { label: "আজ ফেরত", value: banglaNumber(stats.returnedToday), icon: RotateCcw, color: "bg-purple-600", change: "সফল রিটার্ন", href: "/admin/borrowings" },
+    { label: "রিজার্ভেশন", value: banglaNumber(stats.reservations), icon: Bookmark, color: "bg-amber-600", change: "অপেক্ষায় আছে", href: "/admin/borrowings" },
   ];
 
   return (
@@ -75,17 +75,18 @@ export default function AdminDashboardPage() {
       {/* Stats grid */}
       <motion.div variants={stagger} className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
         {statsCards.map((card, i) => (
-          <motion.div
-            key={i}
-            variants={fadeUp}
-            className="bg-white rounded-2xl p-4 border border-gray-100 hover:shadow-card transition-all duration-300"
-          >
-            <div className={`w-10 h-10 rounded-xl ${card.color} flex items-center justify-center mb-3`}>
-              <card.icon size={18} className="text-white" />
-            </div>
-            <p className="text-2xl font-bold text-gray-900 font-english">{card.value}</p>
-            <p className="text-sm font-medium text-gray-700 font-bangla mt-0.5">{card.label}</p>
-            <p className="text-xs text-gray-400 font-bangla mt-1">{card.change}</p>
+          <motion.div key={i} variants={fadeUp}>
+            <Link
+              href={card.href}
+              className="block bg-white rounded-2xl p-4 border border-gray-100 hover:shadow-card hover:border-primary-100 transition-all duration-300 group"
+            >
+              <div className={`w-10 h-10 rounded-xl ${card.color} flex items-center justify-center mb-3`}>
+                <card.icon size={18} className="text-white" />
+              </div>
+              <p className="text-2xl font-bold text-gray-900 font-english">{card.value}</p>
+              <p className="text-sm font-medium text-gray-700 font-bangla mt-0.5">{card.label}</p>
+              <p className="text-xs text-gray-400 font-bangla mt-1">{card.change}</p>
+            </Link>
           </motion.div>
         ))}
       </motion.div>
@@ -96,7 +97,7 @@ export default function AdminDashboardPage() {
         <motion.div variants={fadeUp} className="bg-white rounded-2xl border border-gray-100 p-6">
           <div className="flex items-center gap-2 mb-5">
             <TrendingUp size={18} className="text-primary" />
-            <h2 className="font-bold text-gray-900 font-bangla">মাসিক ধারের পরিসংখ্যান</h2>
+            <h2 className="font-bold text-gray-900 font-bangla">মাসিক বিতরণের পরিসংখ্যান</h2>
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={stats.monthlyData}>
@@ -104,7 +105,7 @@ export default function AdminDashboardPage() {
               <XAxis dataKey="month" tick={{ fontSize: 12, fontFamily: "Inter" }} />
               <YAxis tick={{ fontSize: 12, fontFamily: "Inter" }} />
               <Tooltip
-                formatter={(value) => [banglaNumber(Number(value)), "ধার"]}
+                formatter={(value) => [banglaNumber(Number(value)), "বিতরণ"]}
                 contentStyle={{ fontFamily: "Hind Siliguri, sans-serif", borderRadius: "12px", border: "1px solid #e2e8f0" }}
               />
               <Bar dataKey="count" fill="#1a3c34" radius={[6, 6, 0, 0]} />
@@ -182,7 +183,7 @@ export default function AdminDashboardPage() {
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
           <h2 className="font-bold text-gray-900 font-bangla flex items-center gap-2">
             <Clock size={18} className="text-primary" />
-            সাম্প্রতিক ধার
+            সাম্প্রতিক বিতরণ
           </h2>
           <Link href="/admin/borrowings" className="text-sm text-primary hover:underline font-bangla flex items-center gap-1">
             সব দেখুন <ArrowRight size={14} />

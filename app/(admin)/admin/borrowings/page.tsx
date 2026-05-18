@@ -153,8 +153,8 @@ export default function AdminBorrowingsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-primary font-bangla-serif">ধার ব্যবস্থাপনা</h1>
-          <p className="text-gray-500 text-sm font-bangla mt-0.5">{banglaNumber(total)}টি ধারের রেকর্ড</p>
+          <h1 className="text-2xl font-bold text-primary font-bangla-serif">বিতরণ ব্যবস্থাপনা</h1>
+          <p className="text-gray-500 text-sm font-bangla mt-0.5">{banglaNumber(total)}টি বিতরণের রেকর্ড</p>
         </div>
         <button
           onClick={openIssue}
@@ -217,7 +217,7 @@ export default function AdminBorrowingsPage() {
                 <tr>
                   <td colSpan={6} className="text-center py-16">
                     <BookMarked size={40} className="text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-400 font-bangla">কোনো ধার পাওয়া যায়নি।</p>
+                    <p className="text-gray-400 font-bangla">কোনো বিতরণ পাওয়া যায়নি।</p>
                   </td>
                 </tr>
               ) : (

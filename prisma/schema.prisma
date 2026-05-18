@@ -12,7 +12,7 @@ datasource db {
 // BorrowStatus: ACTIVE | RETURNED | OVERDUE
 // ReservationStatus: PENDING | FULFILLED | CANCELLED | EXPIRED
 // BookStatus: AVAILABLE | ALL_ISSUED | RESERVED | UNAVAILABLE
-// MembershipTier: SILVER | GOLDEN | PLATINUM
+// MembershipTier: GENERAL | SILVER | GOLDEN | PLATINUM
 
 model User {
   id              String   @id @default(cuid())
@@ -56,6 +56,8 @@ model Book {
   isbn            String?  @unique
   category        String
   description     String?
+  translator      String?
+  translatorBangla String?
   coverImage      String?
   totalCopies     Int      @default(1)
   availableCopies Int      @default(1)
@@ -166,4 +168,43 @@ model SystemSettings {
   value       String
   description String?
   updatedAt   DateTime @updatedAt
+}
+
+model Leadership {
+  id          String   @id @default(cuid())
+  name        String
+  role        String
+  description String?
+  photo       String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([order])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  nameEn    String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([order])
+}
+
+model ProgramEvent {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  videoUrl    String?
+  thumbnail   String?
+  colorClass  String   @default("bg-emerald-500")
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([order])
 }

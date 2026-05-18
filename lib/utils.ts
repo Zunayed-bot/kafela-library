@@ -60,6 +60,7 @@ export function banglaNumber(n: number): string {
 
 export function membershipTierLabel(tier: string): string {
   const map: Record<string, string> = {
+    GENERAL: "সাধারণ",
     SILVER: "আল ফিদ্দাহ (সিলভার)",
     GOLDEN: "আয যাহাব (গোল্ডেন)",
     PLATINUM: "আল মারজান (প্লাটিনাম)",
@@ -69,6 +70,7 @@ export function membershipTierLabel(tier: string): string {
 
 export function membershipTierColor(tier: string): string {
   const map: Record<string, string> = {
+    GENERAL: "text-gray-600 bg-gray-100",
     SILVER: "text-slate-600 bg-slate-100",
     GOLDEN: "text-amber-700 bg-amber-50",
     PLATINUM: "text-teal-700 bg-teal-50",

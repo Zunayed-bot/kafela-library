@@ -195,7 +195,7 @@ export default function ProfilePage() {
             { label: "ইমেইল", value: user.email || "—" },
             { label: "বিভাগ", value: user.department || "—" },
             { label: "সেশন", value: user.session || "—" },
-            { label: "ধার সীমা", value: `${user.borrowLimit}টি বই` },
+            { label: "বিতরণ সীমা", value: `${user.borrowLimit}টি বই` },
             { label: "সক্রিয়করণের তারিখ", value: user.activatedAt ? formatDateBn(user.activatedAt) : "—" },
           ].map((field, i) => (
             <div key={i} className="space-y-1">
