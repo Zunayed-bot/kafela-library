@@ -158,7 +158,8 @@ export default function LeadershipPage() {
               <GripVertical size={18} className="text-gray-300 shrink-0" />
               <div className="w-16 h-16 rounded-xl overflow-hidden bg-primary-50 shrink-0">
                 {leader.photo ? (
-                  <Image src={leader.photo} alt={leader.name} width={64} height={64} className="object-cover w-full h-full" />
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={leader.photo} alt={leader.name} className="object-cover w-full h-full" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-primary font-bold text-xl font-bangla">
                     {leader.name.charAt(0)}
@@ -208,9 +209,10 @@ export default function LeadershipPage() {
               <form onSubmit={handleSave} className="p-6 space-y-4">
                 {/* Photo */}
                 <div className="flex items-start gap-4">
-                  <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-primary-50 border-2 border-dashed border-primary-200 shrink-0">
+                  <div className="w-20 h-20 rounded-xl overflow-hidden bg-primary-50 border-2 border-dashed border-primary-200 shrink-0">
                     {photoPreview ? (
-                      <Image src={photoPreview} alt="Photo" fill className="object-cover" />
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={photoPreview} alt="Photo" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-primary-300 font-bold text-2xl font-bangla">
                         {form.name.charAt(0) || "?"}
