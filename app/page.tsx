@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import {
   BookOpen, Users, BookMarked, Award, ChevronRight, Star,
@@ -411,121 +411,126 @@ function ProgramsSection() {
           </motion.p>
         </motion.div>
 
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={stagger}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {displayPrograms.map((program) => (
-            <motion.button
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayPrograms.map((program, i) => (
+            <motion.div
               key={program.id}
-              variants={fadeUp}
-              onClick={() => setActiveProgram(program)}
-              className="group bg-white rounded-2xl p-6 border border-gray-100 hover:border-gold/30 hover:shadow-card-hover transition-all duration-300 card-hover text-left w-full cursor-pointer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08, duration: 0.5 }}
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className={`w-12 h-12 ${program.colorClass} rounded-xl flex items-center justify-center`}>
-                  <Video size={22} className="text-white" />
+              <button
+                type="button"
+                onClick={() => setActiveProgram(program)}
+                className="group bg-white rounded-2xl p-6 border border-gray-100 hover:border-gold/30 hover:shadow-card-hover transition-all duration-300 card-hover text-left w-full cursor-pointer"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`w-12 h-12 ${program.colorClass} rounded-xl flex items-center justify-center`}>
+                    <Video size={22} className="text-white" />
+                  </div>
+                  <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Play size={14} className="text-primary" />
+                  </div>
                 </div>
-                <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Play size={14} className="text-primary" />
-                </div>
-              </div>
-              <h3 className="font-bold text-gray-900 font-bangla mb-2 text-lg">{program.title}</h3>
-              {program.description && <p className="text-gray-500 text-sm font-bangla leading-relaxed">{program.description}</p>}
-              <p className="text-primary text-xs font-bangla mt-3 flex items-center gap-1">
-                <Video size={10} />
-                {program.videos.length > 0 ? `${program.videos.length}টি ভিডিও` : "ভিডিও আসছে শীঘ্রই"}
-              </p>
-            </motion.button>
+                <h3 className="font-bold text-gray-900 font-bangla mb-2 text-lg">{program.title}</h3>
+                {program.description && <p className="text-gray-500 text-sm font-bangla leading-relaxed">{program.description}</p>}
+                <p className="text-primary text-xs font-bangla mt-3 flex items-center gap-1">
+                  <Video size={10} />
+                  {program.videos.length > 0 ? `${program.videos.length}টি ভিডিও` : "ভিডিও আসছে শীঘ্রই"}
+                </p>
+              </button>
+            </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
 
       {/* Program Videos Modal */}
-      {activeProgram && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-          onClick={() => setActiveProgram(null)}
-        >
+      <AnimatePresence>
+        {activeProgram && (
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col"
-            onClick={e => e.stopPropagation()}
+            key="program-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-4"
+            onClick={() => setActiveProgram(null)}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 ${activeProgram.colorClass} rounded-xl flex items-center justify-center`}>
-                  <Video size={18} className="text-white" />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-100 shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 ${activeProgram.colorClass} rounded-xl flex items-center justify-center`}>
+                    <Video size={18} className="text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 font-bangla text-lg">{activeProgram.title}</h3>
+                    <p className="text-gray-400 text-xs font-bangla">{activeProgram.videos.length}টি ভিডিও</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 font-bangla text-lg">{activeProgram.title}</h3>
-                  <p className="text-gray-400 text-xs font-bangla">{activeProgram.videos.length}টি ভিডিও</p>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveProgram(null)}
+                  className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center"
+                >
+                  <X size={18} className="text-gray-500" />
+                </button>
               </div>
-              <button
-                onClick={() => setActiveProgram(null)}
-                className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center"
-              >
-                <X size={18} className="text-gray-500" />
-              </button>
-            </div>
 
-            {/* Videos grid */}
-            <div className="overflow-y-auto p-6">
-              {activeProgram.videos.length === 0 ? (
-                <div className="text-center py-12">
-                  <Video size={40} className="text-gray-200 mx-auto mb-3" />
-                  <p className="text-gray-400 font-bangla">এখনো কোনো ভিডিও যোগ হয়নি।</p>
-                  <p className="text-gray-300 text-sm font-bangla mt-1">শীঘ্রই আসছে ইনশাআল্লাহ</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {activeProgram.videos.map((video) => (
-                    <a
-                      key={video.id}
-                      href={video.videoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-primary/40 hover:shadow-card transition-all"
-                    >
-                      {/* Thumbnail */}
-                      <div className="relative h-28 bg-gray-100">
-                        {video.thumbnail ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={video.thumbnail} alt={video.title || "ভিডিও"} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-primary-50">
-                            <Play size={28} className="text-primary/40" />
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                            <ExternalLink size={16} className="text-primary" />
+              {/* Videos grid */}
+              <div className="overflow-y-auto p-6">
+                {activeProgram.videos.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Video size={40} className="text-gray-200 mx-auto mb-3" />
+                    <p className="text-gray-400 font-bangla">এখনো কোনো ভিডিও যোগ হয়নি।</p>
+                    <p className="text-gray-300 text-sm font-bangla mt-1">শীঘ্রই আসছে ইনশাআল্লাহ</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {activeProgram.videos.map((video) => (
+                      <a
+                        key={video.id}
+                        href={video.videoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group block rounded-xl overflow-hidden border border-gray-100 hover:border-primary/40 hover:shadow-card transition-all"
+                      >
+                        <div className="relative h-28 bg-gray-100">
+                          {video.thumbnail ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={video.thumbnail} alt={video.title || "ভিডিও"} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-primary-50">
+                              <Play size={28} className="text-primary/40" />
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                              <ExternalLink size={16} className="text-primary" />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      {/* Title */}
-                      <div className="p-2.5">
-                        <p className="text-gray-800 font-bangla text-xs font-medium leading-snug line-clamp-2">
-                          {video.title || "ভিডিও দেখুন"}
-                        </p>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
+                        <div className="p-2.5">
+                          <p className="text-gray-800 font-bangla text-xs font-medium leading-snug line-clamp-2">
+                            {video.title || "ভিডিও দেখুন"}
+                          </p>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
+      </AnimatePresence>
     </section>
   );
 }
