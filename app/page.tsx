@@ -32,8 +32,12 @@ function Navbar() {
         <div className="flex items-center justify-between h-18">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl overflow-hidden ring-2 ring-gold/40">
+            <div className="w-11 h-11 rounded-xl overflow-hidden ring-2 ring-gold/40 shrink-0">
               <Image src="/images/logo.jpg" alt="Logo" width={44} height={44} className="object-cover" />
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-white font-bold text-sm font-english leading-tight tracking-wide">SIDDIQUE-E AKBAR RA.</p>
+              <p className="text-gold text-xs font-english tracking-widest">STUDENT DELEGATION</p>
             </div>
           </Link>
 
@@ -144,10 +148,24 @@ function HeroSection() {
       {/* Islamic geometric pattern overlay */}
       <div className="absolute inset-0 pattern-overlay opacity-50" />
 
+      {/* Headline image — sits between navbar and content */}
+      <div className="absolute top-[72px] left-0 right-0 z-10 flex justify-center">
+        <div className="relative w-full max-w-4xl px-4">
+          <Image
+            src="/images/headline.jpeg"
+            alt="Headline"
+            width={1200}
+            height={200}
+            className="w-full object-contain"
+            priority
+          />
+        </div>
+      </div>
+
       {/* Content */}
       <motion.div
         style={{ opacity }}
-        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20"
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-56 pb-20"
       >
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <motion.div variants={stagger} initial="hidden" animate="visible">
