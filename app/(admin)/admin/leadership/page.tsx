@@ -12,12 +12,15 @@ interface Leader {
   role: string;
   description?: string;
   photo?: string;
-  profileUrl?: string;
+  email?: string;
+  phone?: string;
+  facebookUrl?: string;
+  youtubeUrl?: string;
   order: number;
   isActive: boolean;
 }
 
-const emptyForm = { name: "", role: "", description: "", photo: "", profileUrl: "", order: 0, isActive: true };
+const emptyForm = { name: "", role: "", description: "", photo: "", email: "", phone: "", facebookUrl: "", youtubeUrl: "", order: 0, isActive: true };
 
 export default function LeadershipPage() {
   const [leaders, setLeaders] = useState<Leader[]>([]);
@@ -53,7 +56,7 @@ export default function LeadershipPage() {
 
   const openEdit = (l: Leader) => {
     setEditLeader(l);
-    setForm({ name: l.name, role: l.role, description: l.description || "", photo: l.photo || "", profileUrl: l.profileUrl || "", order: l.order, isActive: l.isActive });
+    setForm({ name: l.name, role: l.role, description: l.description || "", photo: l.photo || "", email: l.email || "", phone: l.phone || "", facebookUrl: l.facebookUrl || "", youtubeUrl: l.youtubeUrl || "", order: l.order, isActive: l.isActive });
     setPhotoFile(null);
     setPhotoPreview(l.photo || null);
     setModal("edit");
@@ -243,9 +246,23 @@ export default function LeadershipPage() {
                   <label className="block text-sm font-medium text-gray-700 font-bangla mb-1.5">বিবরণ (ঐচ্ছিক)</label>
                   <input type="text" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className="input-primary font-bangla" placeholder="সংগঠনের নাম ইত্যাদি" />
                 </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 font-bangla mb-1.5">ইমেইল (ঐচ্ছিক)</label>
+                    <input type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} className="input-primary font-english" placeholder="name@example.com" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 font-bangla mb-1.5">ফোন (ঐচ্ছিক)</label>
+                    <input type="text" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} className="input-primary font-bangla" placeholder="০১৭..." />
+                  </div>
+                </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 font-bangla mb-1.5">প্রোফাইল লিংক (ঐচ্ছিক)</label>
-                  <input type="url" value={form.profileUrl} onChange={e => setForm(f => ({ ...f, profileUrl: e.target.value }))} className="input-primary font-english" placeholder="https://facebook.com/..." />
+                  <label className="block text-sm font-medium text-gray-700 font-bangla mb-1.5">ফেসবুক লিংক (ঐচ্ছিক)</label>
+                  <input type="url" value={form.facebookUrl} onChange={e => setForm(f => ({ ...f, facebookUrl: e.target.value }))} className="input-primary font-english" placeholder="https://facebook.com/..." />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 font-bangla mb-1.5">ইউটিউব লিংক (ঐচ্ছিক)</label>
+                  <input type="url" value={form.youtubeUrl} onChange={e => setForm(f => ({ ...f, youtubeUrl: e.target.value }))} className="input-primary font-english" placeholder="https://youtube.com/..." />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>

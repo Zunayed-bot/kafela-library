@@ -630,11 +630,15 @@ interface Leader {
   role: string;
   description?: string;
   photo?: string;
-  profileUrl?: string;
+  email?: string;
+  phone?: string;
+  facebookUrl?: string;
+  youtubeUrl?: string;
 }
 
 function LeadershipSection() {
   const [leaders, setLeaders] = useState<Leader[]>([]);
+  const [activeLeader, setActiveLeader] = useState<Leader | null>(null);
 
   useEffect(() => {
     fetch("/api/public/leaders")
@@ -676,55 +680,129 @@ function LeadershipSection() {
             variants={stagger}
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
           >
-            {leaders.map((leader, i) => {
-              const CardWrapper = ({ children }: { children: React.ReactNode }) =>
-                leader.profileUrl ? (
-                  <a href={leader.profileUrl} target="_blank" rel="noreferrer" className="block group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-gold/30 hover:shadow-gold transition-all duration-300 card-hover cursor-pointer">
-                    {children}
-                  </a>
-                ) : (
-                  <div className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-gold/30 hover:shadow-gold transition-all duration-300 card-hover">
-                    {children}
-                  </div>
-                );
-
-              return (
-                <motion.div key={leader.id} variants={fadeUp}>
-                  <CardWrapper>
-                    <div className="relative h-64 overflow-hidden bg-primary-50">
-                      {leader.photo ? (
-                        <Image
-                          src={leader.photo}
-                          alt={leader.name}
-                          fill
-                          className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-primary-200 font-bold text-6xl font-bangla">
-                          {leader.name.charAt(0)}
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary-950/60 via-transparent to-transparent" />
-                      {leader.profileUrl && (
-                        <div className="absolute top-3 right-3 w-8 h-8 bg-white/20 backdrop-blur rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <ExternalLink size={14} className="text-white" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-6 border-t-2 border-gold/20">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-2 h-2 rounded-full bg-gold" />
-                        <span className="text-gold text-xs font-medium font-bangla">{leader.role}</span>
+            {leaders.map((leader) => (
+              <motion.div key={leader.id} variants={fadeUp}>
+                <button
+                  type="button"
+                  onClick={() => setActiveLeader(leader)}
+                  className="group w-full bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-gold/30 hover:shadow-gold transition-all duration-300 card-hover text-left cursor-pointer"
+                >
+                  <div className="relative h-64 overflow-hidden bg-primary-50">
+                    {leader.photo ? (
+                      <Image src={leader.photo} alt={leader.name} fill className="object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-primary-200 font-bold text-6xl font-bangla">
+                        {leader.name.charAt(0)}
                       </div>
-                      <h3 className="text-xl font-bold text-primary font-bangla-serif mb-1">{leader.name}</h3>
-                      {leader.description && <p className="text-gray-500 text-sm font-bangla">{leader.description}</p>}
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary-950/60 via-transparent to-transparent" />
+                  </div>
+                  <div className="p-6 border-t-2 border-gold/20">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2 h-2 rounded-full bg-gold" />
+                      <span className="text-gold text-xs font-medium font-bangla">{leader.role}</span>
                     </div>
-                  </CardWrapper>
-                </motion.div>
-              );
-            })}
+                    <h3 className="text-xl font-bold text-primary font-bangla-serif mb-1">{leader.name}</h3>
+                    {leader.description && <p className="text-gray-500 text-sm font-bangla">{leader.description}</p>}
+                    <p className="text-primary text-xs font-bangla mt-3 opacity-0 group-hover:opacity-100 transition-opacity">বিস্তারিত দেখুন →</p>
+                  </div>
+                </button>
+              </motion.div>
+            ))}
           </motion.div>
         )}
+
+        {/* Leader CV Modal */}
+        <AnimatePresence>
+          {activeLeader && (
+            <motion.div
+              key="leader-modal"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center p-4"
+              onClick={() => setActiveLeader(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="bg-white rounded-2xl w-full max-w-md overflow-hidden"
+                onClick={e => e.stopPropagation()}
+              >
+                {/* Photo banner */}
+                <div className="relative h-48 bg-primary-50">
+                  {activeLeader.photo ? (
+                    <Image src={activeLeader.photo} alt={activeLeader.name} fill className="object-cover object-top" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-primary-200 font-bold text-7xl font-bangla">
+                      {activeLeader.name.charAt(0)}
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary-950/70 via-transparent to-transparent" />
+                  <button
+                    type="button"
+                    onClick={() => setActiveLeader(null)}
+                    className="absolute top-3 right-3 w-8 h-8 bg-black/30 hover:bg-black/50 rounded-full flex items-center justify-center transition-colors"
+                  >
+                    <X size={16} className="text-white" />
+                  </button>
+                </div>
+
+                {/* Content */}
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2 h-2 rounded-full bg-gold" />
+                    <span className="text-gold text-xs font-bangla font-medium">{activeLeader.role}</span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-primary font-bangla-serif mb-1">{activeLeader.name}</h3>
+                  {activeLeader.description && (
+                    <p className="text-gray-500 text-sm font-bangla mb-4">{activeLeader.description}</p>
+                  )}
+
+                  {/* Contact info */}
+                  {(activeLeader.email || activeLeader.phone || activeLeader.facebookUrl || activeLeader.youtubeUrl) && (
+                    <div className="border-t border-gray-100 pt-4 space-y-2.5 mt-4">
+                      {activeLeader.phone && (
+                        <a href={`tel:${activeLeader.phone}`} className="flex items-center gap-3 text-gray-700 hover:text-primary transition-colors group">
+                          <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center group-hover:bg-primary-100 transition-colors">
+                            <Phone size={14} className="text-primary" />
+                          </div>
+                          <span className="font-bangla text-sm">{activeLeader.phone}</span>
+                        </a>
+                      )}
+                      {activeLeader.email && (
+                        <a href={`mailto:${activeLeader.email}`} className="flex items-center gap-3 text-gray-700 hover:text-primary transition-colors group">
+                          <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center group-hover:bg-primary-100 transition-colors">
+                            <ExternalLink size={14} className="text-primary" />
+                          </div>
+                          <span className="font-english text-sm">{activeLeader.email}</span>
+                        </a>
+                      )}
+                      {activeLeader.facebookUrl && (
+                        <a href={activeLeader.facebookUrl} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-gray-700 hover:text-blue-600 transition-colors group">
+                          <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                            <Globe size={14} className="text-blue-600" />
+                          </div>
+                          <span className="font-english text-sm">Facebook</span>
+                        </a>
+                      )}
+                      {activeLeader.youtubeUrl && (
+                        <a href={activeLeader.youtubeUrl} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-gray-700 hover:text-red-600 transition-colors group">
+                          <div className="w-8 h-8 bg-red-50 rounded-full flex items-center justify-center group-hover:bg-red-100 transition-colors">
+                            <Video size={14} className="text-red-600" />
+                          </div>
+                          <span className="font-english text-sm">YouTube</span>
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );

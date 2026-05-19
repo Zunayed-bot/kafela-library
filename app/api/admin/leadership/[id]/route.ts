@@ -9,11 +9,11 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
   try {
     const body = await request.json();
-    const { name, role, description, photo, profileUrl, order, isActive } = body;
+    const { name, role, description, photo, email, phone, facebookUrl, youtubeUrl, order, isActive } = body;
 
     const leader = await prisma.leadership.update({
       where: { id: params.id },
-      data: { name, role, description, photo, profileUrl, order, isActive },
+      data: { name, role, description, photo, email, phone, facebookUrl, youtubeUrl, order, isActive },
     });
 
     return apiResponse(leader, "আপডেট হয়েছে।");
