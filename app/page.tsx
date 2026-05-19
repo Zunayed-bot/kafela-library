@@ -33,7 +33,7 @@ function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl overflow-hidden ring-2 ring-gold/40">
-              <Image src="/images/logo.png" alt="Logo" width={44} height={44} className="object-cover" />
+              <Image src="/images/logo.jpg" alt="Logo" width={44} height={44} className="object-cover" />
             </div>
           </Link>
 
@@ -202,7 +202,7 @@ function HeroSection() {
             className="hidden lg:flex items-center justify-center"
           >
             <div className="w-72 h-72 rounded-3xl overflow-hidden ring-4 ring-gold/30 shadow-gold-lg">
-              <Image src="/images/logo.png" alt="সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা" width={288} height={288} className="object-contain w-full h-full bg-white/5" />
+              <Image src="/images/logo.jpg" alt="সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা" width={288} height={288} className="object-contain w-full h-full bg-white/5" />
             </div>
           </motion.div>
         </div>
@@ -954,7 +954,7 @@ function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-gold/40">
-                <Image src="/images/logo.png" alt="Logo" width={48} height={48} className="object-cover" />
+                <Image src="/images/logo.jpg" alt="Logo" width={48} height={48} className="object-cover" />
               </div>
               <div>
                 <p className="text-white font-bold font-bangla-serif text-lg">সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা</p>

@@ -62,7 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Logo */}
         <div className="flex items-center gap-3 p-5 border-b border-white/10">
           <div className="w-9 h-9 rounded-xl overflow-hidden ring-2 ring-gold/40 shrink-0">
-            <Image src="/images/logo.png" alt="Logo" width={36} height={36} className="object-cover" />
+            <Image src="/images/logo.jpg" alt="Logo" width={36} height={36} className="object-cover" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-gold text-xs font-semibold font-bangla truncate">কাফেলা গ্রন্থাগার</p>
