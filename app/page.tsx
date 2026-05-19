@@ -392,55 +392,42 @@ function ProgramsSection() {
   return (
     <section className="py-24 bg-surface-2">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={stagger}
-          className="text-center mb-14"
-        >
-          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 bg-primary-50 rounded-full px-4 py-1.5 mb-4">
+        <div className="text-center mb-14">
+          <div className="inline-flex items-center gap-2 bg-primary-50 rounded-full px-4 py-1.5 mb-4">
             <Star size={14} className="text-primary" />
             <span className="text-primary text-sm font-bangla font-medium">আমাদের কার্যক্রম</span>
-          </motion.div>
-          <motion.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-bold text-primary font-bangla-serif mb-4">
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-bold text-primary font-bangla-serif mb-4">
             কাফেলার সদস্যদের জন্য ধারাবাহিক আয়োজন
-          </motion.h2>
-          <motion.p variants={fadeUp} className="text-gray-500 max-w-2xl mx-auto font-bangla">
+          </h2>
+          <p className="text-gray-500 max-w-2xl mx-auto font-bangla">
             জ্ঞান, দক্ষতা ও চরিত্র গঠনে আমরা বিভিন্ন ধারাবাহিক কার্যক্রম পরিচালনা করে থাকি।
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayPrograms.map((program, i) => (
-            <motion.div
+          {displayPrograms.map((program) => (
+            <button
               key={program.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08, duration: 0.5 }}
+              type="button"
+              onClick={() => setActiveProgram(program)}
+              className="group bg-white rounded-2xl p-6 border border-gray-100 hover:border-gold/30 hover:shadow-card-hover transition-all duration-300 text-left w-full cursor-pointer"
             >
-              <button
-                type="button"
-                onClick={() => setActiveProgram(program)}
-                className="group bg-white rounded-2xl p-6 border border-gray-100 hover:border-gold/30 hover:shadow-card-hover transition-all duration-300 card-hover text-left w-full cursor-pointer"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`w-12 h-12 ${program.colorClass} rounded-xl flex items-center justify-center`}>
-                    <Video size={22} className="text-white" />
-                  </div>
-                  <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Play size={14} className="text-primary" />
-                  </div>
+              <div className="flex items-start justify-between mb-4">
+                <div className={`w-12 h-12 ${program.colorClass} rounded-xl flex items-center justify-center`}>
+                  <Video size={22} className="text-white" />
                 </div>
-                <h3 className="font-bold text-gray-900 font-bangla mb-2 text-lg">{program.title}</h3>
-                {program.description && <p className="text-gray-500 text-sm font-bangla leading-relaxed">{program.description}</p>}
-                <p className="text-primary text-xs font-bangla mt-3 flex items-center gap-1">
-                  <Video size={10} />
-                  {program.videos.length > 0 ? `${program.videos.length}টি ভিডিও` : "ভিডিও আসছে শীঘ্রই"}
-                </p>
-              </button>
-            </motion.div>
+                <div className="w-8 h-8 bg-primary-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Play size={14} className="text-primary" />
+                </div>
+              </div>
+              <h3 className="font-bold text-gray-900 font-bangla mb-2 text-lg">{program.title}</h3>
+              {program.description && <p className="text-gray-500 text-sm font-bangla leading-relaxed">{program.description}</p>}
+              <p className="text-primary text-xs font-bangla mt-3 flex items-center gap-1">
+                <Video size={10} />
+                {program.videos.length > 0 ? `${program.videos.length}টি ভিডিও` : "ভিডিও আসছে শীঘ্রই"}
+              </p>
+            </button>
           ))}
         </div>
       </div>
