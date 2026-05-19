@@ -5,8 +5,7 @@ import { getSessionFromRequest } from "@/lib/auth";
 import { apiResponse, apiError } from "@/lib/utils";
 import { nanoid } from "nanoid";
 
-const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function POST(request: NextRequest) {
   const session = await getSessionFromRequest(request);
@@ -18,11 +17,11 @@ export async function POST(request: NextRequest) {
     const type = (formData.get("type") as string) || "profile";
 
     if (!file) return apiError("ফাইল পাওয়া যায়নি।", 400);
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      return apiError("শুধুমাত্র JPEG, PNG বা WebP ফাইল আপলোড করা যাবে।", 400);
+    if (!file.type.startsWith("image/")) {
+      return apiError("শুধুমাত্র ছবি ফাইল আপলোড করা যাবে।", 400);
     }
     if (file.size > MAX_SIZE) {
-      return apiError("ফাইলের সাইজ সর্বোচ্চ ৫ MB হতে পারবে।", 400);
+      return apiError("ফাইলের সাইজ সর্বোচ্চ ১০ MB হতে পারবে।", 400);
     }
 
     const ext = extname(file.name) || ".jpg";
