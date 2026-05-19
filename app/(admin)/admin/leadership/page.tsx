@@ -12,11 +12,12 @@ interface Leader {
   role: string;
   description?: string;
   photo?: string;
+  profileUrl?: string;
   order: number;
   isActive: boolean;
 }
 
-const emptyForm = { name: "", role: "", description: "", photo: "", order: 0, isActive: true };
+const emptyForm = { name: "", role: "", description: "", photo: "", profileUrl: "", order: 0, isActive: true };
 
 export default function LeadershipPage() {
   const [leaders, setLeaders] = useState<Leader[]>([]);
@@ -52,7 +53,7 @@ export default function LeadershipPage() {
 
   const openEdit = (l: Leader) => {
     setEditLeader(l);
-    setForm({ name: l.name, role: l.role, description: l.description || "", photo: l.photo || "", order: l.order, isActive: l.isActive });
+    setForm({ name: l.name, role: l.role, description: l.description || "", photo: l.photo || "", profileUrl: l.profileUrl || "", order: l.order, isActive: l.isActive });
     setPhotoFile(null);
     setPhotoPreview(l.photo || null);
     setModal("edit");
@@ -241,6 +242,10 @@ export default function LeadershipPage() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 font-bangla mb-1.5">বিবরণ (ঐচ্ছিক)</label>
                   <input type="text" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className="input-primary font-bangla" placeholder="সংগঠনের নাম ইত্যাদি" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 font-bangla mb-1.5">প্রোফাইল লিংক (ঐচ্ছিক)</label>
+                  <input type="url" value={form.profileUrl} onChange={e => setForm(f => ({ ...f, profileUrl: e.target.value }))} className="input-primary font-english" placeholder="https://facebook.com/..." />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>

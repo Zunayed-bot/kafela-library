@@ -20,12 +20,12 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, role, description, photo, order, isActive } = body;
+    const { name, role, description, photo, profileUrl, order, isActive } = body;
 
     if (!name || !role) return apiError("নাম ও পদবি আবশ্যক।", 400);
 
     const leader = await prisma.leadership.create({
-      data: { name, role, description, photo, order: order ?? 0, isActive: isActive ?? true },
+      data: { name, role, description, photo, profileUrl, order: order ?? 0, isActive: isActive ?? true },
     });
 
     return apiResponse(leader, "নেতৃত্ব যোগ হয়েছে।", 201);

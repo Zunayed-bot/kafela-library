@@ -630,6 +630,7 @@ interface Leader {
   role: string;
   description?: string;
   photo?: string;
+  profileUrl?: string;
 }
 
 function LeadershipSection() {
@@ -640,14 +641,6 @@ function LeadershipSection() {
       .then(r => r.json())
       .then(d => d.success && setLeaders(d.data));
   }, []);
-
-  const fallback: Leader[] = [
-    { id: "l1", name: "মুফতী খালেদ সাইফুল্লাহ", role: "প্রধান উপদেষ্টা", description: "সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা", photo: "/images/leaders/leader1.jpg" },
-    { id: "l2", name: "মুফতী আহমাদ মাসউদ", role: "উপদেষ্টা ও প্রধান দিক নির্দেশক", description: "সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা", photo: "/images/leaders/leader2.jpg" },
-    { id: "l3", name: "মুফতী ওয়াসিফ আরাফ", role: "উপদেষ্টা ও তত্ত্বাবধায়ক", description: "সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা", photo: "/images/leaders/leader3.jpg" },
-  ];
-
-  const displayLeaders = leaders.length > 0 ? leaders : fallback;
 
   return (
     <section id="leadership" className="py-24 bg-surface-2">
@@ -671,48 +664,67 @@ function LeadershipSection() {
           </motion.p>
         </motion.div>
 
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={stagger}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
-        >
-          {displayLeaders.map((leader, i) => (
-            <motion.div
-              key={leader.id}
-              variants={fadeUp}
-              className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-gold/30 hover:shadow-gold transition-all duration-400 card-hover"
-            >
-              {/* Photo */}
-              <div className="relative h-64 overflow-hidden bg-primary-50">
-                {leader.photo ? (
-                  <Image
-                    src={leader.photo}
-                    alt={leader.name}
-                    fill
-                    className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                  />
+        {leaders.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-gray-400 font-bangla">নেতৃত্ব সদস্যরা শীঘ্রই যোগ করা হবে।</p>
+          </div>
+        ) : (
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          >
+            {leaders.map((leader, i) => {
+              const CardWrapper = ({ children }: { children: React.ReactNode }) =>
+                leader.profileUrl ? (
+                  <a href={leader.profileUrl} target="_blank" rel="noreferrer" className="block group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-gold/30 hover:shadow-gold transition-all duration-300 card-hover cursor-pointer">
+                    {children}
+                  </a>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-primary-200 font-bold text-6xl font-bangla">
-                    {leader.name.charAt(0)}
+                  <div className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-gold/30 hover:shadow-gold transition-all duration-300 card-hover">
+                    {children}
                   </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-primary-950/60 via-transparent to-transparent" />
-              </div>
+                );
 
-              {/* Info */}
-              <div className="p-6 border-t-2 border-gold/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2 h-2 rounded-full bg-gold" />
-                  <span className="text-gold text-xs font-medium font-bangla">{leader.role}</span>
-                </div>
-                <h3 className="text-xl font-bold text-primary font-bangla-serif mb-1">{leader.name}</h3>
-                {leader.description && <p className="text-gray-500 text-sm font-bangla">{leader.description}</p>}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+              return (
+                <motion.div key={leader.id} variants={fadeUp}>
+                  <CardWrapper>
+                    <div className="relative h-64 overflow-hidden bg-primary-50">
+                      {leader.photo ? (
+                        <Image
+                          src={leader.photo}
+                          alt={leader.name}
+                          fill
+                          className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-primary-200 font-bold text-6xl font-bangla">
+                          {leader.name.charAt(0)}
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-primary-950/60 via-transparent to-transparent" />
+                      {leader.profileUrl && (
+                        <div className="absolute top-3 right-3 w-8 h-8 bg-white/20 backdrop-blur rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ExternalLink size={14} className="text-white" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-6 border-t-2 border-gold/20">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-2 h-2 rounded-full bg-gold" />
+                        <span className="text-gold text-xs font-medium font-bangla">{leader.role}</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-primary font-bangla-serif mb-1">{leader.name}</h3>
+                      {leader.description && <p className="text-gray-500 text-sm font-bangla">{leader.description}</p>}
+                    </div>
+                  </CardWrapper>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
       </div>
     </section>
   );
