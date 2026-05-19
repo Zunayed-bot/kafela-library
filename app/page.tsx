@@ -976,7 +976,6 @@ function Footer() {
               </div>
               <div>
                 <p className="text-white font-bold font-bangla-serif text-lg">সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা</p>
-                <p className="text-white/50 text-sm font-bangla">গ্রন্থাগার ব্যবস্থাপনা সিস্টেম</p>
               </div>
             </div>
             <p className="text-white/50 text-sm font-bangla leading-relaxed mb-4 max-w-sm">
