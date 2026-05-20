@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("অনুমোদন নেই।", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("অনুমোদন নেই।", 403);
 
   try {
     const body = await request.json();

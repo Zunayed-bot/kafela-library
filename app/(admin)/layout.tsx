@@ -7,20 +7,22 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, BookOpen, Users, BookMarked, AlertTriangle,
   ScrollText, LogOut, Menu, X, ChevronDown, Settings, Globe,
-  UserSquare2, Tag, Video,
+  UserSquare2, Tag, Video, UserCog, Lock,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Toaster } from "react-hot-toast";
 
 const navItems = [
-  { href: "/admin", label: "ড্যাশবোর্ড", icon: LayoutDashboard },
-  { href: "/admin/books", label: "বই ব্যবস্থাপনা", icon: BookOpen },
-  { href: "/admin/categories", label: "বিভাগ ব্যবস্থাপনা", icon: Tag },
-  { href: "/admin/users", label: "সদস্য ব্যবস্থাপনা", icon: Users },
-  { href: "/admin/borrowings", label: "বিতরণ ব্যবস্থাপনা", icon: BookMarked },
-  { href: "/admin/overdue", label: "মেয়াদ উত্তীর্ণ", icon: AlertTriangle },
-  { href: "/admin/leadership", label: "নেতৃত্ব ব্যবস্থাপনা", icon: UserSquare2 },
-  { href: "/admin/programs", label: "কার্যক্রম ব্যবস্থাপনা", icon: Video },
-  { href: "/admin/logs", label: "অডিট লগ", icon: ScrollText },
+  { href: "/admin", label: "ড্যাশবোর্ড", icon: LayoutDashboard, superOnly: false },
+  { href: "/admin/books", label: "বই ব্যবস্থাপনা", icon: BookOpen, superOnly: false },
+  { href: "/admin/categories", label: "বিভাগ ব্যবস্থাপনা", icon: Tag, superOnly: false },
+  { href: "/admin/users", label: "সদস্য ব্যবস্থাপনা", icon: Users, superOnly: false },
+  { href: "/admin/borrowings", label: "বিতরণ ব্যবস্থাপনা", icon: BookMarked, superOnly: false },
+  { href: "/admin/overdue", label: "মেয়াদ উত্তীর্ণ", icon: AlertTriangle, superOnly: false },
+  { href: "/admin/leadership", label: "নেতৃত্ব ব্যবস্থাপনা", icon: UserSquare2, superOnly: false },
+  { href: "/admin/programs", label: "কার্যক্রম ব্যবস্থাপনা", icon: Video, superOnly: false },
+  { href: "/admin/logs", label: "অডিট লগ", icon: ScrollText, superOnly: false },
+  { href: "/admin/admins", label: "অ্যাডমিন ব্যবস্থাপনা", icon: UserCog, superOnly: true },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -28,6 +30,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [adminName, setAdminName] = useState("Admin");
+  const [adminRole, setAdminRole] = useState("ADMIN");
   const [profileOpen, setProfileOpen] = useState(false);
 
   useEffect(() => {
@@ -35,8 +38,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       .then((r) => r.json())
       .then((d) => {
         if (d.success) {
-          if (d.data.role !== "ADMIN") router.push("/dashboard");
-          else setAdminName(d.data.name);
+          if (d.data.role !== "ADMIN" && d.data.role !== "SUPER_ADMIN") router.push("/dashboard");
+          else {
+            setAdminName(d.data.name);
+            setAdminRole(d.data.role);
+          }
         } else {
           router.push("/login");
         }
@@ -65,7 +71,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Image src="/images/logo.jpg" alt="Logo" width={36} height={36} className="object-cover" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-gold text-xs font-semibold font-bangla truncate">কাফেলা গ্রন্থাগার</p>
+            <p className="text-gold text-xs font-semibold font-bangla truncate">সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা</p>
             <p className="text-white/50 text-xs font-bangla">অ্যাডমিন প্যানেল</p>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-white/60 hover:text-white">
@@ -81,27 +87,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-white text-sm font-medium font-bangla truncate">{adminName}</p>
-              <p className="text-gold text-xs font-bangla">সুপার অ্যাডমিন</p>
+              <p className="text-gold text-xs font-bangla">
+                {adminRole === "SUPER_ADMIN" ? "সুপার অ্যাডমিন" : "অ্যাডমিন"}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
-            const active = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setSidebarOpen(false)}
-                className={`sidebar-item ${active ? "active" : ""} ${item.href === "/admin/overdue" && !active ? "text-red-300/80 hover:text-red-300" : ""}`}
-              >
-                <item.icon size={18} />
-                <span className="font-bangla text-sm">{item.label}</span>
-              </Link>
-            );
-          })}
+          {navItems
+            .filter((item) => !item.superOnly || adminRole === "SUPER_ADMIN")
+            .map((item) => {
+              const active = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`sidebar-item ${active ? "active" : ""} ${item.href === "/admin/overdue" && !active ? "text-red-300/80 hover:text-red-300" : ""}`}
+                >
+                  <item.icon size={18} />
+                  <span className="font-bangla text-sm">{item.label}</span>
+                </Link>
+              );
+            })}
         </nav>
 
         {/* View site */}
@@ -152,8 +162,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   initial={{ opacity: 0, y: 8, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                  className="absolute right-0 top-full mt-2 w-40 bg-white rounded-xl shadow-premium border border-gray-100 overflow-hidden z-50"
+                  className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-premium border border-gray-100 overflow-hidden z-50"
                 >
+                  <Link href="/change-password" onClick={() => setProfileOpen(false)} className="flex items-center gap-2 w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 font-bangla">
+                    <Lock size={16} />
+                    পাসওয়ার্ড পরিবর্তন
+                  </Link>
+                  <div className="h-px bg-gray-100 mx-3" />
                   <button onClick={handleLogout} className="flex items-center gap-2 w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 font-bangla">
                     <LogOut size={16} />
                     লগআউট
@@ -167,6 +182,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           {children}
         </main>
+        <Toaster position="top-right" toastOptions={{ className: "font-bangla text-sm" }} />
       </div>
     </div>
   );

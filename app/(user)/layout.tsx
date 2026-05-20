@@ -90,7 +90,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
                   <Image src="/images/logo.jpg" alt="Logo" width={36} height={36} className="object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-gold text-xs font-medium font-bangla truncate">কাফেলা গ্রন্থাগার</p>
+                  <p className="text-gold text-xs font-medium font-bangla truncate">সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা</p>
                   <p className="text-white/50 text-xs font-bangla truncate">শিক্ষার্থী পোর্টাল</p>
                 </div>
                 <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-white/60 hover:text-white">

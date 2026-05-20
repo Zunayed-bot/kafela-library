@@ -5,7 +5,7 @@ import { apiResponse, apiError } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("Unauthorized", 401);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("Unauthorized", 401);
 
   const { searchParams } = new URL(request.url);
   const page = Math.max(1, Number(searchParams.get("page") || 1));

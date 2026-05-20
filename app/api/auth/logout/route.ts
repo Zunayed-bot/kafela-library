@@ -6,14 +6,16 @@ import { apiResponse } from "@/lib/utils";
 export async function POST(request: NextRequest) {
   const session = await getSessionFromRequest(request);
   if (session) {
-    await prisma.auditLog.create({
-      data: {
-        action: "LOGOUT",
-        entity: "User",
-        entityId: session.userId,
-        userId: session.userId,
-      },
-    });
+    try {
+      await prisma.auditLog.create({
+        data: {
+          action: "LOGOUT",
+          entity: "User",
+          entityId: session.userId,
+          userId: session.userId,
+        },
+      });
+    } catch { /* audit failure must not block logout */ }
   }
   clearAuthCookie();
   return apiResponse(null, "লগআউট সফল।");

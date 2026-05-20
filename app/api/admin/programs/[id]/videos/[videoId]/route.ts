@@ -5,7 +5,7 @@ import { apiResponse, apiError } from "@/lib/utils";
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string; videoId: string } }) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("Unauthorized", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("Unauthorized", 403);
 
   try {
     const body = await request.json();
@@ -25,7 +25,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string; videoId: string } }) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("Unauthorized", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("Unauthorized", 403);
 
   try {
     await prisma.programVideo.delete({ where: { id: params.videoId } });

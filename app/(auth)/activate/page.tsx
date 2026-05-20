@@ -16,7 +16,7 @@ export default function ActivatePage() {
 
   // Step 1
   const [verifyForm, setVerifyForm] = useState({ studentId: "", phone: "" });
-  const [userId, setUserId] = useState("");
+  const [activationToken, setActivationToken] = useState("");
   const [userName, setUserName] = useState("");
 
   // Step 2
@@ -36,7 +36,7 @@ export default function ActivatePage() {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error); return; }
-      setUserId(data.data.userId);
+      setActivationToken(data.data.activationToken);
       setUserName(data.data.name);
       setStep("setPassword");
     } catch {
@@ -62,7 +62,7 @@ export default function ActivatePage() {
       const res = await fetch("/api/auth/activate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ step: "setPassword", userId, password: passwordForm.password }),
+        body: JSON.stringify({ step: "setPassword", activationToken, password: passwordForm.password }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error); return; }

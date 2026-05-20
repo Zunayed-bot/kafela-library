@@ -52,29 +52,36 @@ export default function AdminBorrowingsPage() {
 
   const fetchBorrowings = async () => {
     setLoading(true);
-    const params = new URLSearchParams({
-      page: String(page), limit: String(limit),
-      ...(search && { search }),
-      ...(statusFilter && { status: statusFilter }),
-    });
-    const res = await fetch(`/api/admin/borrowings?${params}`);
-    const data = await res.json();
-    if (data.success) {
-      setBorrowings(data.data.borrowings || []);
-      setTotal(data.data.total || 0);
+    try {
+      const params = new URLSearchParams({
+        page: String(page), limit: String(limit),
+        ...(search && { search }),
+        ...(statusFilter && { status: statusFilter }),
+      });
+      const res = await fetch(`/api/admin/borrowings?${params}`);
+      const data = await res.json();
+      if (data.success) {
+        setBorrowings(data.data.borrowings || []);
+        setTotal(data.data.total || 0);
+      }
+    } catch {
+      /* network error — keep existing data */
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => { fetchBorrowings(); }, [page, search, statusFilter]);
 
   const fetchUsersAndBooks = async () => {
-    const [ur, br] = await Promise.all([
-      fetch("/api/users?limit=100&status=ACTIVE").then((r) => r.json()),
-      fetch("/api/books?limit=200&status=AVAILABLE").then((r) => r.json()),
-    ]);
-    if (ur.success) setUsers(ur.data.users || []);
-    if (br.success) setBooks(br.data.books || []);
+    try {
+      const [ur, br] = await Promise.all([
+        fetch("/api/users?limit=200").then((r) => r.json()),
+        fetch("/api/books?limit=200").then((r) => r.json()),
+      ]);
+      if (ur.success) setUsers(ur.data.users || []);
+      if (br.success) setBooks(br.data.books || []);
+    } catch { /* ignore */ }
   };
 
   const openIssue = () => {
@@ -94,41 +101,51 @@ export default function AdminBorrowingsPage() {
       return;
     }
     setIssuing(true);
-    const res = await fetch("/api/borrowings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId: issueForm.userId,
-        bookId: issueForm.bookId,
-        dueDate: issueForm.dueDate,
-        notes: issueForm.notes,
-      }),
-    });
-    const data = await res.json();
-    setIssuing(false);
-    if (res.ok) {
-      toast.success("বই ইস্যু করা হয়েছে!");
-      setIssueModal(false);
-      fetchBorrowings();
-    } else {
-      toast.error(data.error || "ইস্যু ব্যর্থ হয়েছে।");
+    try {
+      const res = await fetch("/api/borrowings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: issueForm.userId,
+          bookId: issueForm.bookId,
+          dueDate: issueForm.dueDate,
+          notes: issueForm.notes,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("বই ইস্যু করা হয়েছে!");
+        setIssueModal(false);
+        fetchBorrowings();
+      } else {
+        toast.error(data.error || "ইস্যু ব্যর্থ হয়েছে।");
+      }
+    } catch {
+      toast.error("সংযোগ ব্যর্থ হয়েছে।");
+    } finally {
+      setIssuing(false);
     }
   };
 
   const handleReturn = async (id: string) => {
     setReturning(id);
-    const res = await fetch(`/api/borrowings/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "return" }),
-    });
-    const data = await res.json();
-    setReturning(null);
-    if (res.ok) {
-      toast.success("বই ফেরত নেওয়া হয়েছে!");
-      fetchBorrowings();
-    } else {
-      toast.error(data.error || "ফেরত ব্যর্থ হয়েছে।");
+    try {
+      const res = await fetch(`/api/borrowings/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "return" }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("বই ফেরত নেওয়া হয়েছে!");
+        fetchBorrowings();
+      } else {
+        toast.error(data.error || "ফেরত ব্যর্থ হয়েছে।");
+      }
+    } catch {
+      toast.error("সংযোগ ব্যর্থ হয়েছে।");
+    } finally {
+      setReturning(null);
     }
   };
 

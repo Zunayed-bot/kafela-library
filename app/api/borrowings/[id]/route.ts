@@ -19,12 +19,12 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     if (!borrowing) return apiError("বিতরণ রেকর্ড পাওয়া যায়নি।", 404);
 
     // Only admin or the owner can act
-    if (session.role !== "ADMIN" && session.userId !== borrowing.userId) {
+    if (!["ADMIN","SUPER_ADMIN"].includes(session.role) && session.userId !== borrowing.userId) {
       return apiError("অনুমোদন নেই।", 403);
     }
 
     if (action === "return") {
-      if (session.role !== "ADMIN") return apiError("শুধুমাত্র অ্যাডমিন বই ফেরত নিতে পারবেন।", 403);
+      if (!["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("শুধুমাত্র অ্যাডমিন বই ফেরত নিতে পারবেন।", 403);
 
       if (borrowing.status === "RETURNED") return apiError("বই ইতিমধ্যে ফেরত দেওয়া হয়েছে।", 409);
 

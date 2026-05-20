@@ -5,10 +5,9 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Search, BookOpen, Filter, Grid, List, SortAsc,
-  AlertTriangle, Bookmark, BookMarked, X, ChevronLeft, ChevronRight,
+  Eye, X, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { banglaNumber } from "@/lib/utils";
-import toast from "react-hot-toast";
 
 interface Book {
   id: string;
@@ -45,7 +44,6 @@ export default function BooksPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"grid" | "list">("grid");
-  const [hasProfilePicture, setHasProfilePicture] = useState(true);
 
   const [filters, setFilters] = useState({
     search: "", category: "", status: "", sort: "createdAt", order: "desc",
@@ -72,49 +70,10 @@ export default function BooksPage() {
 
   useEffect(() => { fetchBooks(); }, [fetchBooks]);
 
-  useEffect(() => {
-    fetch("/api/auth/me").then((r) => r.json()).then((d) => {
-      if (d.success) setHasProfilePicture(!!d.data.profilePicture);
-    });
-  }, []);
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setFilters((f) => ({ ...f, search: searchInput }));
     setPage(1);
-  };
-
-  const handleBorrow = async (bookId: string, bookTitle: string) => {
-    if (!hasProfilePicture) {
-      toast.error("বই নিতে প্রোফাইল ছবি আপলোড করুন।");
-      return;
-    }
-    const res = await fetch("/api/borrowings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookId }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      toast.success(`"${bookTitle}" সফলভাবে বিতরণ নেওয়া হয়েছে!`);
-      fetchBooks();
-    } else {
-      toast.error(data.error || "বিতরণ নিতে ব্যর্থ হয়েছে।");
-    }
-  };
-
-  const handleReserve = async (bookId: string, bookTitle: string) => {
-    const res = await fetch("/api/reservations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bookId }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      toast.success(`"${bookTitle}" রিজার্ভ করা হয়েছে!`);
-    } else {
-      toast.error(data.error || "রিজার্ভ ব্যর্থ হয়েছে।");
-    }
   };
 
   return (
@@ -141,16 +100,13 @@ export default function BooksPage() {
         </div>
       </div>
 
-      {/* Profile picture warning */}
-      {!hasProfilePicture && (
-        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-          <AlertTriangle size={18} className="text-amber-600 shrink-0" />
-          <p className="text-amber-700 text-sm font-bangla">
-            বই নিতে প্রোফাইল ছবি আপলোড করুন।{" "}
-            <a href="/dashboard/profile" className="underline font-medium">এখনই যান</a>
-          </p>
-        </div>
-      )}
+      {/* View-only notice */}
+      <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3">
+        <Eye size={18} className="text-blue-600 shrink-0" />
+        <p className="text-blue-700 text-sm font-bangla">
+          আপনি শুধুমাত্র বই দেখতে পারবেন। বই নিতে বা রিজার্ভ করতে লাইব্রেরিয়ানের সাথে যোগাযোগ করুন।
+        </p>
+      </div>
 
       {/* Search & Filters */}
       <div className="bg-white rounded-2xl border border-gray-100 p-4">
@@ -290,26 +246,12 @@ export default function BooksPage() {
                   )}
                 </div>
 
-                {/* Actions */}
-                <div className="mt-3 flex gap-2">
-                  {book.availableCopies > 0 ? (
-                    <button
-                      onClick={() => handleBorrow(book.id, book.titleBangla || book.title)}
-                      disabled={!hasProfilePicture}
-                      className="flex-1 bg-primary hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-medium py-2 rounded-lg transition-colors font-bangla flex items-center justify-center gap-1"
-                    >
-                      <BookMarked size={13} />
-                      বিতরণ নিন
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleReserve(book.id, book.titleBangla || book.title)}
-                      className="flex-1 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium py-2 rounded-lg transition-colors font-bangla flex items-center justify-center gap-1"
-                    >
-                      <Bookmark size={13} />
-                      রিজার্ভ করুন
-                    </button>
-                  )}
+                {/* View only */}
+                <div className="mt-3">
+                  <div className="flex items-center justify-center gap-1 text-xs text-gray-400 font-bangla py-2 rounded-lg bg-gray-50 border border-gray-100">
+                    <Eye size={12} />
+                    শুধুমাত্র দেখার অনুমতি
+                  </div>
                 </div>
               </div>
             </motion.div>

@@ -5,7 +5,7 @@ import { apiResponse, apiError } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("Unauthorized", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("Unauthorized", 403);
 
   const leaders = await prisma.leadership.findMany({
     orderBy: { order: "asc" },
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("Unauthorized", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("Unauthorized", 403);
 
   try {
     const body = await request.json();

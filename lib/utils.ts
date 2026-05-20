@@ -44,7 +44,8 @@ export function truncate(str: string, maxLen: number): string {
 }
 
 export function generateOTP(): string {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
+  const { randomInt } = require("crypto");
+  return String(randomInt(100000, 999999));
 }
 
 export function calculateDueDate(days: number = 14): Date {

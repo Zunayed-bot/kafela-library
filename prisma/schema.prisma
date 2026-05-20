@@ -28,16 +28,19 @@ model User {
   status          String   @default("PENDING")
   membershipTier  String   @default("GOLDEN")
   borrowLimit     Int      @default(3)
-  isActivated     Boolean  @default(false)
-  activatedAt     DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  isActivated        Boolean  @default(false)
+  activatedAt        DateTime?
+  mustChangePassword Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   borrowings      Borrowing[]
   reservations    Reservation[]
   auditLogs       AuditLog[]  @relation("UserLogs")
   adminActions    AuditLog[]  @relation("AdminLogs")
   resetTokens     PasswordResetToken[]
+  recoveryKeys    AdminRecoveryKey[]  @relation("UserRecoveryKeys")
+  createdRecoveryKeys AdminRecoveryKey[] @relation("CreatedRecoveryKeys")
 
   @@index([studentId])
   @@index([phone])
@@ -211,6 +214,22 @@ model ProgramEvent {
   videos      ProgramVideo[]
 
   @@index([order])
+}
+
+model AdminRecoveryKey {
+  id           String    @id @default(cuid())
+  userId       String
+  keyEncrypted String
+  used         Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  usedAt       DateTime?
+  createdById  String?
+
+  user         User      @relation("UserRecoveryKeys", fields: [userId], references: [id], onDelete: Cascade)
+  createdBy    User?     @relation("CreatedRecoveryKeys", fields: [createdById], references: [id])
+
+  @@index([userId])
+  @@index([used])
 }
 
 model ProgramVideo {

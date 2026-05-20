@@ -5,7 +5,7 @@ import { apiResponse, apiError } from "@/lib/utils";
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("Unauthorized", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("Unauthorized", 403);
 
   const videos = await prisma.programVideo.findMany({
     where: { programId: params.id },
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("Unauthorized", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("Unauthorized", 403);
 
   try {
     const body = await request.json();

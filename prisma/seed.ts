@@ -6,27 +6,37 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Seeding database...");
 
-  // Admin user
-  const existingAdmin = await prisma.user.findFirst({ where: { role: "ADMIN" } });
-  if (!existingAdmin) {
-    const hash = await bcrypt.hash("admin123456", 12);
-    await prisma.user.create({
-      data: {
-        name: "System Admin",
-        studentId: "ADMIN001",
-        phone: "01700000000",
-        role: "ADMIN",
-        password: hash,
-        isActivated: true,
-        status: "ACTIVE",
-        activatedAt: new Date(),
-        membershipTier: "PLATINUM",
-        borrowLimit: 10,
-      },
-    });
-    console.log("Admin user created: ADMIN001 / admin123456");
+  // Super Admin user
+  const existingSuperAdmin = await prisma.user.findFirst({ where: { role: "SUPER_ADMIN" } });
+  if (!existingSuperAdmin) {
+    const legacyAdmin = await prisma.user.findUnique({ where: { studentId: "ADMIN001" } });
+    if (legacyAdmin) {
+      await prisma.user.update({
+        where: { studentId: "ADMIN001" },
+        data: { role: "SUPER_ADMIN", email: "admin.sasd@gmail.com" },
+      });
+      console.log("Upgraded ADMIN001 to SUPER_ADMIN. Login: email=admin@kafela.local / admin123456");
+    } else {
+      const hash = await bcrypt.hash("admin123456", 12);
+      await prisma.user.create({
+        data: {
+          name: "Super Admin",
+          studentId: "ADMIN001",
+          phone: "01700000000",
+          email: "admin.sasd@gmail.com",
+          role: "SUPER_ADMIN",
+          password: hash,
+          isActivated: true,
+          status: "ACTIVE",
+          activatedAt: new Date(),
+          membershipTier: "PLATINUM",
+          borrowLimit: 10,
+        },
+      });
+      console.log("Super Admin created. Login: email=admin@kafela.local / admin123456");
+    }
   } else {
-    console.log("Admin user already exists.");
+    console.log("Super Admin already exists.");
   }
 
   // Sample books

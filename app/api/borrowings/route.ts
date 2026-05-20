@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
   const where: Record<string, unknown> = {};
 
-  if (session.role !== "ADMIN") {
+  if (!["ADMIN","SUPER_ADMIN"].includes(session.role)) {
     where.userId = session.userId;
   } else if (userId) {
     where.userId = userId;
@@ -49,12 +49,14 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const session = await getSessionFromRequest(request);
   if (!session) return apiError("অনুমোদন নেই।", 401);
+  if (!["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("শুধুমাত্র অ্যাডমিন বই বিতরণ করতে পারেন।", 403);
 
   try {
     const body = await request.json();
-    const { bookId, userId: requestedUserId, borrowDays } = body;
+    const { bookId, userId: requestedUserId, borrowDays, dueDate: reqDueDate, notes } = body;
 
-    const targetUserId = session.role === "ADMIN" && requestedUserId ? requestedUserId : session.userId;
+    const isAdmin = ["ADMIN", "SUPER_ADMIN"].includes(session.role);
+    const targetUserId = isAdmin && requestedUserId ? requestedUserId : session.userId;
 
     // Check user
     const user = await prisma.user.findUnique({
@@ -63,10 +65,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) return apiError("ব্যবহারকারী পাওয়া যায়নি।", 404);
-    if (user.status !== "ACTIVE") return apiError("অ্যাকাউন্ট সক্রিয় নেই।", 403);
+    if (user.status === "SUSPENDED") return apiError("স্থগিত অ্যাকাউন্টে বই ইস্যু করা যাবে না।", 403);
 
     // Profile picture check (skip for admin-issued)
-    if (session.role !== "ADMIN" && !user.profilePicture) {
+    if (!["ADMIN","SUPER_ADMIN"].includes(session.role) && !user.profilePicture) {
       return apiError("বই নিতে প্রোফাইল ছবি আপলোড করুন।", 403);
     }
 
@@ -96,8 +98,7 @@ export async function POST(request: NextRequest) {
     });
     if (duplicate) return apiError("আপনি ইতিমধ্যে এই বই নিয়েছেন।", 409);
 
-    const days = borrowDays ? parseInt(borrowDays) : 14;
-    const dueDate = calculateDueDate(days);
+    const dueDate = reqDueDate ? new Date(reqDueDate) : calculateDueDate(borrowDays ? parseInt(borrowDays) : 14);
 
     const [borrowing] = await prisma.$transaction([
       prisma.borrowing.create({
@@ -128,7 +129,7 @@ export async function POST(request: NextRequest) {
         entity: "Borrowing",
         entityId: borrowing.id,
         userId: targetUserId,
-        adminId: session.role === "ADMIN" ? session.userId : undefined,
+        adminId: isAdmin ? session.userId : undefined,
         details: JSON.stringify({ bookId, title: book.title, dueDate }),
       },
     });

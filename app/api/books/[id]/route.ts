@@ -26,7 +26,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("অনুমোদন নেই।", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("অনুমোদন নেই।", 403);
 
   try {
     const body = await request.json();
@@ -80,7 +80,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("অনুমোদন নেই।", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("অনুমোদন নেই।", 403);
 
   const activeBorrowings = await prisma.borrowing.count({
     where: { bookId: params.id, status: { in: ["ACTIVE", "OVERDUE"] } },

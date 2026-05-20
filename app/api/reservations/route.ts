@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   if (!session) return apiError("অনুমোদন নেই।", 401);
 
   const where: Record<string, unknown> = {};
-  if (session.role !== "ADMIN") where.userId = session.userId;
+  if (!["ADMIN","SUPER_ADMIN"].includes(session.role)) where.userId = session.userId;
 
   const limit = Math.min(100, Number(new URL(request.url).searchParams.get("limit") || 50));
 
@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const session = await getSessionFromRequest(request);
   if (!session) return apiError("অনুমোদন নেই।", 401);
+  if (!["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("শুধুমাত্র অ্যাডমিন রিজার্ভ করতে পারেন।", 403);
 
   try {
     const { bookId } = await request.json();
@@ -81,7 +82,7 @@ export async function DELETE(request: NextRequest) {
   const reservation = await prisma.reservation.findUnique({ where: { id } });
   if (!reservation) return apiError("রিজার্ভেশন পাওয়া যায়নি।", 404);
 
-  if (session.role !== "ADMIN" && reservation.userId !== session.userId) {
+  if (!["ADMIN","SUPER_ADMIN"].includes(session.role) && reservation.userId !== session.userId) {
     return apiError("অনুমোদন নেই।", 403);
   }
 

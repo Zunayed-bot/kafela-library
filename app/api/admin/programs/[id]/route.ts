@@ -5,7 +5,7 @@ import { apiResponse, apiError } from "@/lib/utils";
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("Unauthorized", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("Unauthorized", 403);
 
   try {
     const body = await request.json();
@@ -17,7 +17,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     });
 
     return apiResponse(program, "আপডেট হয়েছে।");
-  } catch (err) {
+  } catch (err: unknown) {
+    if ((err as { code?: string }).code === "P2025") return apiError("পাওয়া যায়নি।", 404);
     console.error("[PROGRAMS PUT]", err);
     return apiError("আপডেট ব্যর্থ।", 500);
   }
@@ -25,12 +26,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("Unauthorized", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("Unauthorized", 403);
 
   try {
     await prisma.programEvent.delete({ where: { id: params.id } });
     return apiResponse(null, "মুছে ফেলা হয়েছে।");
-  } catch (err) {
+  } catch (err: unknown) {
+    if ((err as { code?: string }).code === "P2025") return apiError("পাওয়া যায়নি।", 404);
     console.error("[PROGRAMS DELETE]", err);
     return apiError("মুছতে ব্যর্থ।", 500);
   }

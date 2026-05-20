@@ -76,7 +76,16 @@ export default function AdminUsersPage() {
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
-  const openAdd = () => { setEditUser(null); setForm(defaultForm); setShowModal(true); };
+  const openAdd = async () => {
+    setEditUser(null);
+    setForm(defaultForm);
+    setShowModal(true);
+    try {
+      const res = await fetch("/api/admin/next-student-id");
+      const data = await res.json();
+      if (data.success) setForm((f) => ({ ...f, studentId: data.data.studentId }));
+    } catch { /* non-fatal */ }
+  };
   const openEdit = (u: User) => {
     setEditUser(u);
     setForm({

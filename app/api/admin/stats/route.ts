@@ -5,7 +5,7 @@ import { apiResponse, apiError } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("অনুমোদন নেই।", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("অনুমোদন নেই।", 403);
 
   await prisma.borrowing.updateMany({
     where: { status: "ACTIVE", dueDate: { lt: new Date() } },

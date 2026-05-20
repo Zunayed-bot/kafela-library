@@ -1,7 +1,30 @@
 import { NextRequest } from "next/server";
+import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { apiResponse, apiError } from "@/lib/utils";
+
+const secret = new TextEncoder().encode(
+  process.env.JWT_SECRET || "fallback-secret-change-in-production-32chars"
+);
+
+async function signActivationToken(userId: string): Promise<string> {
+  return new SignJWT({ userId, purpose: "activate" })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("10m")
+    .sign(secret);
+}
+
+async function verifyActivationToken(token: string): Promise<string | null> {
+  try {
+    const { payload } = await jwtVerify(token, secret);
+    if (payload.purpose !== "activate" || !payload.userId) return null;
+    return payload.userId as string;
+  } catch {
+    return null;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,11 +38,8 @@ export async function POST(request: NextRequest) {
       }
 
       const user = await prisma.user.findFirst({
-        where: {
-          studentId,
-          phone: phone.trim(),
-        },
-        select: { id: true, name: true, status: true, isActivated: true, studentId: true },
+        where: { studentId, phone: phone.trim() },
+        select: { id: true, name: true, status: true, isActivated: true },
       });
 
       if (!user) {
@@ -34,12 +54,13 @@ export async function POST(request: NextRequest) {
         return apiError("আপনার অ্যাকাউন্ট স্থগিত আছে। অ্যাডমিনের সাথে যোগাযোগ করুন।", 403);
       }
 
-      return apiResponse({ userId: user.id, name: user.name }, "পরিচয় নিশ্চিত হয়েছে।");
+      const activationToken = await signActivationToken(user.id);
+      return apiResponse({ activationToken, name: user.name }, "পরিচয় নিশ্চিত হয়েছে।");
     }
 
     if (step === "setPassword") {
-      const { userId, password } = body;
-      if (!userId || !password) {
+      const { activationToken, password } = body;
+      if (!activationToken || !password) {
         return apiError("তথ্য অসম্পূর্ণ।", 400);
       }
 
@@ -47,18 +68,18 @@ export async function POST(request: NextRequest) {
         return apiError("পাসওয়ার্ড কমপক্ষে ৮ অক্ষর হতে হবে।", 400);
       }
 
+      const userId = await verifyActivationToken(activationToken);
+      if (!userId) {
+        return apiError("যাচাইয়ের মেয়াদ শেষ। আবার শুরু করুন।", 401);
+      }
+
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: { id: true, isActivated: true, status: true },
       });
 
-      if (!user) {
-        return apiError("ব্যবহারকারী পাওয়া যায়নি।", 404);
-      }
-
-      if (user.isActivated) {
-        return apiError("অ্যাকাউন্ট ইতিমধ্যে সক্রিয় আছে।", 409);
-      }
+      if (!user) return apiError("ব্যবহারকারী পাওয়া যায়নি।", 404);
+      if (user.isActivated) return apiError("অ্যাকাউন্ট ইতিমধ্যে সক্রিয় আছে।", 409);
 
       const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -72,14 +93,11 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      await prisma.auditLog.create({
-        data: {
-          action: "ACCOUNT_ACTIVATED",
-          entity: "User",
-          entityId: userId,
-          userId,
-        },
-      });
+      try {
+        await prisma.auditLog.create({
+          data: { action: "ACCOUNT_ACTIVATED", entity: "User", entityId: userId, userId },
+        });
+      } catch { /* non-fatal */ }
 
       return apiResponse(null, "অ্যাকাউন্ট সফলভাবে সক্রিয় হয়েছে।");
     }

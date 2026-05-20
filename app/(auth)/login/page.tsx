@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ studentId: "", password: "", remember: false });
+  const [form, setForm] = useState({ studentId: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -32,7 +32,9 @@ export default function LoginPage() {
         return;
       }
 
-      if (data.data?.role === "ADMIN") {
+      if (data.data?.mustChangePassword) {
+        router.push("/change-password");
+      } else if (data.data?.role === "ADMIN" || data.data?.role === "SUPER_ADMIN") {
         router.push("/admin");
       } else {
         router.push("/dashboard");
@@ -83,13 +85,13 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 font-bangla mb-1.5">
-              ছাত্র আইডি *
+              ছাত্র আইডি / ইমেইল *
             </label>
             <input
               type="text"
               value={form.studentId}
               onChange={(e) => setForm({ ...form, studentId: e.target.value })}
-              placeholder="আপনার ছাত্র আইডি লিখুন"
+              placeholder="ছাত্র আইডি বা ইমেইল লিখুন"
               className="input-primary"
               required
               autoFocus
@@ -119,19 +121,10 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={form.remember}
-                onChange={(e) => setForm({ ...form, remember: e.target.checked })}
-                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
-              />
-              <span className="text-sm text-gray-600 font-bangla">মনে রাখুন</span>
-            </label>
-            <div className="text-sm text-gray-500 font-bangla">
-              পাসওয়ার্ড ভুলে গেলে অ্যাডমিনের সাথে যোগাযোগ করুন
-            </div>
+          <div className="flex items-center justify-end">
+            <Link href="/recover" className="text-sm text-primary hover:underline font-bangla">
+              পাসওয়ার্ড পুনরুদ্ধার করুন
+            </Link>
           </div>
 
           <button

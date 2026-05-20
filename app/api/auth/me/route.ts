@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       id: true, name: true, studentId: true, phone: true, email: true,
       department: true, session: true, profilePicture: true, role: true,
       status: true, membershipTier: true, borrowLimit: true, isActivated: true,
-      activatedAt: true, createdAt: true,
+      activatedAt: true, createdAt: true, mustChangePassword: true,
       _count: {
         select: {
           borrowings: true,

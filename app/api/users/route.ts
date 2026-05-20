@@ -5,7 +5,7 @@ import { apiResponse, apiError } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("অনুমোদন নেই।", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("অনুমোদন নেই।", 403);
 
   const { searchParams } = new URL(request.url);
   const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("অনুমোদন নেই।", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("অনুমোদন নেই।", 403);
 
   try {
     const body = await request.json();
@@ -80,15 +80,17 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    await prisma.auditLog.create({
-      data: {
-        action: "USER_REGISTERED",
-        entity: "User",
-        entityId: user.id,
-        adminId: session.userId,
-        details: JSON.stringify({ name, studentId }),
-      },
-    });
+    try {
+      await prisma.auditLog.create({
+        data: {
+          action: "USER_REGISTERED",
+          entity: "User",
+          entityId: user.id,
+          adminId: session.userId,
+          details: JSON.stringify({ name, studentId }),
+        },
+      });
+    } catch { /* audit log failure must not block user creation */ }
 
     return apiResponse(user, "শিক্ষার্থী সফলভাবে নিবন্ধিত হয়েছে।", 201);
   } catch (err) {

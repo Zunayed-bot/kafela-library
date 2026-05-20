@@ -16,7 +16,7 @@ export async function PATCH(
   const reservation = await prisma.reservation.findUnique({ where: { id } });
   if (!reservation) return apiError("রিজার্ভেশন পাওয়া যায়নি।", 404);
 
-  if (session.role !== "ADMIN" && reservation.userId !== session.userId) {
+  if (!["ADMIN","SUPER_ADMIN"].includes(session.role) && reservation.userId !== session.userId) {
     return apiError("অনুমোদন নেই।", 403);
   }
 
@@ -41,7 +41,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const session = await getSessionFromRequest(request);
-  if (!session || session.role !== "ADMIN") return apiError("অনুমোদন নেই।", 403);
+  if (!session || !["ADMIN","SUPER_ADMIN"].includes(session.role)) return apiError("অনুমোদন নেই।", 403);
 
   await prisma.reservation.delete({ where: { id: params.id } });
   return apiResponse(null, "মুছে ফেলা হয়েছে।");

@@ -11,6 +11,15 @@ export interface JWTPayload {
   role: string;
   studentId: string;
   name: string;
+  mustChangePassword?: boolean;
+}
+
+export function isAdmin(role: string): boolean {
+  return role === "ADMIN" || role === "SUPER_ADMIN";
+}
+
+export function isSuperAdmin(role: string): boolean {
+  return role === "SUPER_ADMIN";
 }
 
 export async function signToken(payload: JWTPayload): Promise<string> {

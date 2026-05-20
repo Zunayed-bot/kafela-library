@@ -36,8 +36,7 @@ function Navbar() {
               <Image src="/images/logo.jpg" alt="Logo" width={44} height={44} className="object-cover" />
             </div>
             <div className="hidden sm:block">
-              <p className="text-white font-bold text-sm font-english leading-tight tracking-wide">SIDDIQUE-E AKBAR RA.</p>
-              <p className="text-gold text-xs font-english tracking-widest">STUDENT DELEGATION</p>
+              <p className="text-white font-bold text-sm font-bangla-serif leading-tight">সিদ্দীকে আকবার রাযি. ছাত্র কাফেলা</p>
             </div>
           </Link>
 
@@ -134,7 +133,7 @@ function HeroSection() {
   return (
     <section id="home" ref={ref} className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background */}
-      <motion.div style={{ y }} className="absolute inset-0">
+      <motion.div style={{ y, willChange: "transform" }} className="absolute inset-0">
         <Image
           src="/images/home_page.jpg"
           alt="Library Interior"
@@ -251,16 +250,17 @@ function StatsSection() {
   const [data, setData] = useState({ totalBooks: 0, totalUsers: 0, totalCategories: 0, totalBorrowings: 0 });
 
   useEffect(() => {
-    fetch("/api/public/stats")
-      .then(r => r.json())
-      .then(d => d.success && setData(d.data));
+    const load = () => fetch("/api/public/stats").then(r => r.json()).then(d => d.success && setData(d.data));
+    load();
+    const id = setInterval(load, 30000);
+    return () => clearInterval(id);
   }, []);
 
   const stats = [
     { value: data.totalBooks > 0 ? `${data.totalBooks}+` : "২,৫০০+", label: "মোট বই সংগ্রহ", icon: BookOpen, desc: "ইসলামি ও আধুনিক জ্ঞানের বিশাল ভান্ডার" },
     { value: data.totalUsers > 0 ? `${data.totalUsers}+` : "৩০০+", label: "নিবন্ধিত সদস্য", icon: Users, desc: "তিন স্তরের বিশেষ সদস্যপদ" },
     { value: data.totalCategories > 0 ? `${data.totalCategories}+` : "১৫+", label: "বিভাগ", icon: Library, desc: "বিভিন্ন জ্ঞানশাখার শ্রেণিবদ্ধ সংগ্রহ" },
-    { value: data.totalBorrowings > 0 ? `${data.totalBorrowings}+` : "৫,০০০+", label: "সফল বিতরণ", icon: BookMarked, desc: "জ্ঞানচর্চার অব্যাহত ধারা" },
+    { value: `${data.totalBorrowings}`, label: "সফল বিতরণ", icon: BookMarked, desc: "জ্ঞানচর্চার অব্যাহত ধারা" },
   ];
 
   return (
@@ -1025,10 +1025,10 @@ function Footer() {
               </p>
               <p className="text-gold text-sm font-english font-semibold">ZedDev</p>
               <a
-                href="mailto:zedev@gmail.com"
+                href="mailto:zeddev@gmail.com"
                 className="text-white/50 hover:text-gold text-xs font-english transition-colors"
               >
-                zedev@gmail.com
+                zeddev@gmail.com
               </a>
             </div>
           </div>
@@ -1042,7 +1042,7 @@ function Footer() {
           </p>
           <p className="font-english">
             Designed & Developed by{" "}
-            <a href="mailto:zedev@gmail.com" className="text-gold hover:text-gold-light transition-colors">
+            <a href="mailto:zeddev@gmail.com" className="text-gold hover:text-gold-light transition-colors">
               ZedDev
             </a>
           </p>
