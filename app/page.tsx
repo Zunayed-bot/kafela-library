@@ -135,7 +135,7 @@ function HeroSection() {
       {/* Background */}
       <motion.div style={{ y, willChange: "transform" }} className="absolute inset-0">
         <Image
-          src="/images/home_page.jpg"
+          src="/images/hero.jpg"
           alt="Library Interior"
           fill
           className="object-cover"
